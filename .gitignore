@@ -1,2 +1,4 @@
 *.o
 .idea
+main
+src/main
