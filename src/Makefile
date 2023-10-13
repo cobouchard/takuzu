@@ -2,16 +2,16 @@ CFLAGS = -std=c11 -Wall -Wextra -g -O2
 CPPFLAGS = -l../include -DDEBUG
 lDFLAGS = -lgetopt -lm
 
-all: main
+all: takuzu
 
-main: takuzu.o
+takuzu: takuzu.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-main.o: takuzu.c
+takuzu.o: takuzu.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
 clean: 
-	@rm -f *.o main
+	@rm -f *.o takuzu
 
 help:
 	@echo "Usage: "

@@ -1,9 +1,9 @@
 all:
 	@make -C src
-	@cp src/main .
+	@cp src/takuzu .
 
 clean: 
-	@rm -f *.o main
+	@rm -f *.o takuzu
 
 
 help:

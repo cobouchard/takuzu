@@ -93,6 +93,12 @@ int main(int argc, char* argv[])
         char* input = argv[optind];
         if(input==NULL)
             errx(EXIT_FAILURE, "no input grid file is given");
+
+        FILE* file;
+        file = fopen(input, "r");
+        if(file == NULL)
+            errx(EXIT_FAILURE, "the file %s doesn't exist", input);
+        fclose(file);
         printf("opening the grid from \"%s\" file\n",input);
         parameters.input=input;
     }
@@ -101,8 +107,7 @@ int main(int argc, char* argv[])
 
 void print_help()
 {
-    printf("Usage: \ttakuzu[-a|-o FILE|-v|-h] FILE... \t takuzu -g[SIZE] [-u|-o FILE|-v|-h]\n \
-    Solve or generate takuzu grids of size: 4, 8, 16, 32, 64\n \
+    printf("Usage: \ttakuzu[-a|-o FILE|-v|-h] FILE... \n\ttakuzu -g[SIZE] [-u|-o FILE|-v|-h] \nSolve or generate takuzu grids of size: 4, 8, 16, 32, 64\n \
     -a, --all \t \t \t \tsearch for all possible solutions\n \
     -g[N], --generate[N] \t \tgenerate a grid of size NxN (default:8)\n \
     -o FILE, --output FILE \t \twrite output to FILE\n \
