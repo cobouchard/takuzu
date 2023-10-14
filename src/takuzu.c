@@ -22,7 +22,7 @@ static struct Params {
 
 void print_help();
 
-bool checkArgGenerator(char *arg);
+int checkArgGenerator(char *arg);
 
 int main(int argc, char *argv[]) {
     struct Params parameters;
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     static struct option long_options[] =
             {
                     {"all",      no_argument,       0, 'a'},
-                    {"generate", required_argument, 0, 'g'},
+                    {"generate", optional_argument, 0, 'g'},
                     {"output",   required_argument, 0, 'o'},
                     {"unique",   no_argument,       0, 'u'},
                     {"verbose",  no_argument,       0, 'v'},
@@ -48,18 +48,22 @@ int main(int argc, char *argv[]) {
     int c;
     int option_index = 0;
     do {
-        c = getopt_long(argc, argv, "auvhg:o:", long_options, &option_index);
+        c = getopt_long(argc, argv, "auvhg::o:", long_options, &option_index);
         switch (c) {
             case 'h':
                 print_help();
                 exit(EXIT_SUCCESS);
             case 'v':
                 parameters.verbose_flag = 1;
+                printf("Verbose mode on\n");
                 break;
             case 'u':
-                if (parameters.solver_mode)
-                    errx(EXIT_FAILURE, "option \"unique\" incompatible with mode \"solver\" ");
+                if (parameters.solver_mode){
+                    warnx( "option \"unique\" incompatible with mode \"solver\" ");
+                    exit(EXIT_FAILURE);
+                }
 
+                printf("Generating a grid with unique solution\n");
                 parameters.unique = true;
                 break;
             case 'o':
@@ -67,18 +71,29 @@ int main(int argc, char *argv[]) {
                 printf("output will be written in %s \n", optarg);
                 break;
             case 'a':
-                if (!parameters.solver_mode)
-                    errx(EXIT_FAILURE, "option \"all\" incompatible with mode \"generator\" ");
+                if (!parameters.solver_mode){
+                    warnx( "option \"all\" incompatible with mode \"generator\" ");
+                    exit(EXIT_FAILURE);
+                }
 
+                printf("Searching for all possibles solutions\n");
                 parameters.all = true;
                 break;
             case 'g':
-                if (parameters.all)
-                    errx(EXIT_FAILURE, "mode \"generator\" incompatible with option \"all\" ");
+                if (parameters.all){
+                    warnx( "mode \"generator\" incompatible with option \"all\" ");
+                    exit(EXIT_FAILURE);
+                }
+                int temp_N;
+                if(argv[optind] != NULL){
+                    temp_N = checkArgGenerator(argv[optind]);
+                    if (temp_N==-1)
+                        errx(EXIT_FAILURE, "grids size must be 4, 8, 16, 32 or 64\n");
+                    parameters.N = temp_N;
+                    optind++;
+                }
 
-                if (!checkArgGenerator(optarg))
-                    errx(EXIT_FAILURE, "grids size must be 4, 8, 16, 32 or 64\n");
-
+                printf("Generating grids for N=%d\n", parameters.N);
                 parameters.solver_mode = false;
                 break;
         }
@@ -86,8 +101,12 @@ int main(int argc, char *argv[]) {
 
     if (parameters.solver_mode) {
         char *input = argv[optind];
+
         if (input == NULL)
-            errx(EXIT_FAILURE, "no input grid file is given");
+            errx(EXIT_FAILURE, "no input grid file is given for solver mode");
+
+        if(argv[optind+1])
+            errx(EXIT_FAILURE,"too many arguments for solver mode");
 
         FILE *file;
         file = fopen(input, "r");
@@ -97,6 +116,9 @@ int main(int argc, char *argv[]) {
         printf("opening the grid from \"%s\" file\n", input);
         parameters.input = input;
     }
+    else if (argv[optind]!=NULL)
+        errx(EXIT_FAILURE, "too many arguments for generator mode, no file needed");
+
 
 }
 
@@ -111,12 +133,14 @@ void print_help() {
 
 }
 
-bool checkArgGenerator(char *arg) {
+int checkArgGenerator(char *arg) {
     char *end;
     long temp_N = strtol(arg, &end, 10);
     if (end == arg)
         return false;
-    return (temp_N == 4 || temp_N == 8 || temp_N == 16 || temp_N == 32 || temp_N == 64);
+    if (temp_N == 4 || temp_N == 8 || temp_N == 16 || temp_N == 32 || temp_N == 64)
+        return temp_N;
+    return -1;
 }
 
 //trop d'argument sur generator
