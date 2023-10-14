@@ -20,9 +20,19 @@ struct Params {
     char *input;
 };
 
-void print_help();
+typedef struct {
+    int size;
+    char** grid;
+} t_grid;
 
+void print_help();
 int checkArgGenerator(char *arg);
+
+void grid_allocate(t_grid* g, int size);
+void grid_free(t_grid* g);
+
+void end_of_main(struct Params params);
+
 
 int main(int argc, char *argv[]) {
     struct Params parameters;
@@ -119,7 +129,7 @@ int main(int argc, char *argv[]) {
     else if (argv[optind]!=NULL)
         errx(EXIT_FAILURE, "too many arguments for generator mode, no file needed");
 
-
+    end_of_main(parameters);
 }
 
 void print_help() {
@@ -148,3 +158,44 @@ int checkArgGenerator(char *arg) {
     return -1;
 }
 
+void grid_allocate(t_grid* g, int size) {
+    g->grid = (char **)malloc(size * sizeof(char *));
+
+    g->size = size;
+    if (g->grid == NULL) {
+        warnx("Fail in the allocation of grid in t_grid");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < size; ++i) {
+        g->grid[i] = (char *)malloc(size * sizeof(char));
+        if (g->grid[i] == NULL) {
+            grid_free(g);
+            warnx("Fail in the allocation of each row of grid in t_grid");
+            exit(EXIT_FAILURE);
+        }
+
+        for (int j = 0; j < size; ++j) {
+            g->grid[i][j] = '_';
+        }
+    }
+}
+
+void grid_free(t_grid* g){
+    for (int i = 0; i < g->size; ++i) {
+        free(g->grid[i]);
+    }
+
+    free(g->grid);
+    g->grid = NULL;
+    g->size = 0;
+}
+
+void end_of_main(struct Params params){
+    t_grid* myGrid = (t_grid*)malloc(sizeof(t_grid));
+    grid_allocate(myGrid,params.N);
+    printf("%c", myGrid->grid[2][3]);
+    grid_free(myGrid);
+
+    free(myGrid);
+}
