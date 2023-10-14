@@ -31,6 +31,7 @@ int checkArgGenerator(char *arg);
 void grid_allocate(t_grid* g, int size);
 void grid_free(const t_grid* g);
 void grid_print(const t_grid* g, FILE* fd);
+bool check_char(const char c);
 
 void end_of_main(char* output);
 static struct Params parameters;
@@ -202,6 +203,10 @@ void grid_print(const t_grid* g, FILE* fd){
         }
         fprintf(fd,"%c",'\n');
     }
+}
+
+bool check_char(const char c){
+    return c=='0' || c=='1' || c=='_';
 }
 
 void end_of_main(char* output){
