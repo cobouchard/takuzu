@@ -10,7 +10,7 @@
 #define DEFAULT_N 8
 #define DEFAULT_UNIQUE false
 
-static struct Params {
+struct Params {
     int verbose_flag;
     bool solver_mode; //The program is on solver_mode by default, set to false if the program is running on generation mode
     bool unique;
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
                 if(argv[optind] != NULL){
                     temp_N = checkArgGenerator(argv[optind]);
                     if (temp_N==-1)
-                        errx(EXIT_FAILURE, "grids size must be 4, 8, 16, 32 or 64\n");
+                        errx(EXIT_FAILURE, "grids size must be 4, 8, 16, 32 or 64");
                     parameters.N = temp_N;
                     optind++;
                 }
@@ -133,6 +133,11 @@ void print_help() {
 
 }
 
+/**
+ *
+ * @param arg string entered to the terminal, should come directly from argv
+ * @return return -1 if the number is not in the list (4,8,16,32,64)
+ */
 int checkArgGenerator(char *arg) {
     char *end;
     long temp_N = strtol(arg, &end, 10);
@@ -143,6 +148,3 @@ int checkArgGenerator(char *arg) {
     return -1;
 }
 
-//trop d'argument sur generator
-//generate n optionnel
-//warning sur conflit de parametres
