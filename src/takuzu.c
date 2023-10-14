@@ -29,13 +29,14 @@ void print_help();
 int checkArgGenerator(char *arg);
 
 void grid_allocate(t_grid* g, int size);
-void grid_free(t_grid* g);
+void grid_free(const t_grid* g);
+void grid_print(const t_grid* g, FILE* fd);
 
-void end_of_main(struct Params params);
-
+void end_of_main(char* output);
+static struct Params parameters;
 
 int main(int argc, char *argv[]) {
-    struct Params parameters;
+
 
     //initialise to defaults values
     parameters.verbose_flag = DEFAULT_VERBOSE;
@@ -129,7 +130,7 @@ int main(int argc, char *argv[]) {
     else if (argv[optind]!=NULL)
         errx(EXIT_FAILURE, "too many arguments for generator mode, no file needed");
 
-    end_of_main(parameters);
+    end_of_main("grid_sortie");
 }
 
 void print_help() {
@@ -181,20 +182,41 @@ void grid_allocate(t_grid* g, int size) {
     }
 }
 
-void grid_free(t_grid* g){
+void grid_free(const t_grid* g){
     for (int i = 0; i < g->size; ++i) {
         free(g->grid[i]);
     }
 
     free(g->grid);
-    g->grid = NULL;
-    g->size = 0;
 }
 
-void end_of_main(struct Params params){
+void grid_print(const t_grid* g, FILE* fd){
+    if(g==NULL){
+        warnx("grid given to print in file is NULL");
+        exit(EXIT_FAILURE);
+    }
+
+    for(int i=0; i!=g->size;i++){
+        for(int j=0; j!=g->size; j++){
+            fprintf(fd,"%c ",g->grid[i][j]);
+        }
+        fprintf(fd,"%c",'\n');
+    }
+}
+
+void end_of_main(char* output){
+    FILE* file;
+    file = fopen(output, "w+");
+
     t_grid* myGrid = (t_grid*)malloc(sizeof(t_grid));
-    grid_allocate(myGrid,params.N);
-    printf("%c", myGrid->grid[2][3]);
+    grid_allocate(myGrid,parameters.N);
+    myGrid->grid[2][3]='0';
+    myGrid->grid[2][4]='1';
+    myGrid->grid[5][3]='0';
+    myGrid->grid[2][7]='1';
+
+    grid_print(myGrid,file);
+    fclose(file);
     grid_free(myGrid);
 
     free(myGrid);
