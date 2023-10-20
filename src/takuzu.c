@@ -11,6 +11,12 @@
 #define DEFAULT_UNIQUE false
 
 #define MAX_BUFFER 256
+#define MAX_GRID_SIZE 64
+
+//this defines states for the parsing function, the current state indicating what kind of character is expected
+#define COMMENT 0
+#define SIGNIFICANT_CHARACTER 1
+#define SEPARATOR 2
 
 struct Params {
     int verbose_flag;
@@ -24,19 +30,29 @@ struct Params {
 
 typedef struct {
     int size;
-    char** grid;
+    char **grid;
 } t_grid;
 
 void print_help();
+
 int checkArgGenerator(char *arg);
 
-void grid_allocate(t_grid* g, int size);
-void grid_free(const t_grid* g);
-void grid_print(const t_grid* g, FILE* fd);
-bool check_char(const char c);
-void file_parser(t_grid* grid, char* filename);
+void grid_allocate(t_grid *g, int size);
 
-void end_of_main(char* output);
+void grid_free(const t_grid *g);
+
+void grid_print(const t_grid *g, FILE *fd);
+
+bool check_char(const char c);
+
+bool check_separator(const char c);
+
+void file_parser(t_grid *grid, char *filename);
+
+char *readLine(char *line, int size, int current_line);
+
+void end_of_main(char *output);
+
 static struct Params parameters;
 
 int main(int argc, char *argv[]) {
@@ -73,8 +89,8 @@ int main(int argc, char *argv[]) {
                 printf("Verbose mode on\n");
                 break;
             case 'u':
-                if (parameters.solver_mode){
-                    warnx( "option \"unique\" incompatible with mode \"solver\" ");
+                if (parameters.solver_mode) {
+                    warnx("option \"unique\" incompatible with mode \"solver\" ");
                     exit(EXIT_FAILURE);
                 }
 
@@ -86,8 +102,8 @@ int main(int argc, char *argv[]) {
                 printf("output will be written in %s \n", optarg);
                 break;
             case 'a':
-                if (!parameters.solver_mode){
-                    warnx( "option \"all\" incompatible with mode \"generator\" ");
+                if (!parameters.solver_mode) {
+                    warnx("option \"all\" incompatible with mode \"generator\" ");
                     exit(EXIT_FAILURE);
                 }
 
@@ -95,15 +111,17 @@ int main(int argc, char *argv[]) {
                 parameters.all = true;
                 break;
             case 'g':
-                if (parameters.all){
-                    warnx( "mode \"generator\" incompatible with option \"all\" ");
+                if (parameters.all) {
+                    warnx("mode \"generator\" incompatible with option \"all\" ");
                     exit(EXIT_FAILURE);
                 }
                 int temp_N;
-                if(argv[optind] != NULL){
+                if (argv[optind] != NULL) {
                     temp_N = checkArgGenerator(argv[optind]);
-                    if (temp_N==-1)
+                    if (temp_N == -1) {
                         errx(EXIT_FAILURE, "grids size must be 4, 8, 16, 32 or 64");
+                    }
+
                     parameters.N = temp_N;
                     optind++;
                 }
@@ -117,24 +135,31 @@ int main(int argc, char *argv[]) {
     if (parameters.solver_mode) {
         char *input = argv[optind];
 
-        if (input == NULL)
+        if (input == NULL) {
             errx(EXIT_FAILURE, "no input grid file is given for solver mode");
+        }
 
-        if(argv[optind+1])
-            errx(EXIT_FAILURE,"too many arguments for solver mode");
+
+        if (argv[optind + 1]) {
+            errx(EXIT_FAILURE, "too many arguments for solver mode");
+        }
+
 
         FILE *file;
         file = fopen(input, "r");
-        if (file == NULL)
+        if (file == NULL) {
             errx(EXIT_FAILURE, "the file %s doesn't exist", input);
+        }
+
         fclose(file);
         printf("opening the grid from \"%s\" file\n", input);
         parameters.input = input;
-    }
-    else if (argv[optind]!=NULL)
+    } else if (argv[optind] != NULL) {
         errx(EXIT_FAILURE, "too many arguments for generator mode, no file needed");
+    }
 
-    end_of_main("grid_sortie");
+
+    end_of_main("grid_sortie.txt");
 }
 
 void print_help() {
@@ -156,15 +181,19 @@ void print_help() {
 int checkArgGenerator(char *arg) {
     char *end;
     long temp_N = strtol(arg, &end, 10);
-    if (end == arg)
+    if (end == arg) {
         return false;
-    if (temp_N == 4 || temp_N == 8 || temp_N == 16 || temp_N == 32 || temp_N == 64)
+    }
+
+    if (temp_N == 4 || temp_N == 8 || temp_N == 16 || temp_N == 32 || temp_N == 64) {
         return temp_N;
+    }
+
     return -1;
 }
 
-void grid_allocate(t_grid* g, int size) {
-    g->grid = (char **)malloc(size * sizeof(char *));
+void grid_allocate(t_grid *g, int size) {
+    g->grid = (char **) malloc(size * sizeof(char *));
 
     g->size = size;
     if (g->grid == NULL) {
@@ -173,7 +202,7 @@ void grid_allocate(t_grid* g, int size) {
     }
 
     for (int i = 0; i < size; ++i) {
-        g->grid[i] = (char *)malloc(size * sizeof(char));
+        g->grid[i] = (char *) malloc(size * sizeof(char));
         if (g->grid[i] == NULL) {
             grid_free(g);
             warnx("Fail in the allocation of each row of grid in t_grid");
@@ -186,61 +215,115 @@ void grid_allocate(t_grid* g, int size) {
     }
 }
 
-void grid_free(const t_grid* g){
+void grid_free(const t_grid *g) {
     for (int i = 0; i < g->size; ++i) {
         free(g->grid[i]);
     }
 
     free(g->grid);
 }
+
 /**
  * print the current grid in an output file, because this function is given a FILE*, it's not its role to close and free it
  * @param g
  * @param fd
  */
-void grid_print(const t_grid* g, FILE* fd){
-    if(g==NULL){
+void grid_print(const t_grid *g, FILE *fd) {
+    if (g == NULL) {
         warnx("grid given to print in file is NULL");
         exit(EXIT_FAILURE);
     }
 
-    for(int i=0; i!=g->size;i++){
-        for(int j=0; j!=g->size; j++){
-            fprintf(fd,"%c ",g->grid[i][j]);
+    for (int i = 0; i != g->size; i++) {
+        for (int j = 0; j != g->size; j++) {
+            fprintf(fd, "%c ", g->grid[i][j]);
         }
-        fprintf(fd,"%c",'\n');
+        fprintf(fd, "%c", '\n');
     }
 }
 
-bool check_char(const char c){
-    return c=='0' || c=='1' || c=='_';
+bool check_char(const char c) {
+    return c == '0' || c == '1' || c == '_';
 }
 
-void file_parser(t_grid* grid, char* filename){
-    FILE* file;
+bool check_separator(const char c) {
+    return c == '\t' || c == ' ';
+}
+
+void file_parser(t_grid *grid, char *filename) {
+    FILE *file;
     file = fopen(filename, "r");
 
     char buffer[MAX_BUFFER];
-    if(fgets(buffer, MAX_BUFFER, file)!=NULL)
-        printf("%s",buffer);
+    char *string = "\0";
+    int current_line = 0;
+
+    if (fgets(buffer, MAX_BUFFER, file) != NULL) {
+        string = readLine(buffer, MAX_GRID_SIZE, current_line);
+    }
+    else{
+        errx(EXIT_FAILURE, "File %s is empty !", filename);
+    }
+
+
+    //let's read the first line, find the size of the grid and continue parsing
+    printf("%s", string);
 
     fclose(file);
 }
 
+/**
+ *
+ * @param line
+ * @param size size of the grid if known, if not known (first time going in this function, should be size 64 and the size will be determined thanks to the first line
+ * @return the corresponding line of the grid (only significant characters)
+ */
+char *readLine(char *line, int size, int current_line) {
+    int state = SIGNIFICANT_CHARACTER;
+
+    char current_char = '\0';
+    int current_index = 0;
+    char *line_of_grid = (char *) malloc(size * sizeof(char *));
+    if (line_of_grid == NULL) {
+        warnx("Fail in the allocation of line_of_grid in readLine function");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; current_char != '\n'; i++) {
+        current_char = line[i];
+        if (current_char != '\n') {
+            if (current_char == '#') {
+                current_char='\n';
+            } else if(check_separator(current_char)){
+                continue;
+            } else if(check_char(current_char)){
+                line_of_grid[current_index] = current_char;
+                current_index++;
+            } else{
+                errx(EXIT_FAILURE,
+                     "Unexpected character '%c' at line %d, a significant character was expected.\n",
+                     current_char, current_line);
+            }
+
+        }
 
 
-void end_of_main(char* output){
-    FILE* file;
+    }
+    return line_of_grid;
+}
+
+void end_of_main(char *output) {
+    FILE *file;
     file = fopen(output, "w+");
 
-    t_grid* myGrid = (t_grid*)malloc(sizeof(t_grid));
-    grid_allocate(myGrid,parameters.N);
-    myGrid->grid[2][3]='0';
-    myGrid->grid[2][4]='1';
-    myGrid->grid[5][3]='0';
-    myGrid->grid[2][7]='1';
+    t_grid *myGrid = (t_grid *) malloc(sizeof(t_grid));
+    grid_allocate(myGrid, parameters.N);
+    myGrid->grid[2][3] = '0';
+    myGrid->grid[2][4] = '1';
+    myGrid->grid[5][3] = '0';
+    myGrid->grid[2][7] = '1';
 
-    grid_print(myGrid,file);
+    grid_print(myGrid, file);
     fclose(file);
     grid_free(myGrid);
 
