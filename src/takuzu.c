@@ -10,6 +10,8 @@
 #define DEFAULT_N 8
 #define DEFAULT_UNIQUE false
 
+#define MAX_BUFFER 256
+
 struct Params {
     int verbose_flag;
     bool solver_mode; //The program is on solver_mode by default, set to false if the program is running on generation mode
@@ -32,6 +34,7 @@ void grid_allocate(t_grid* g, int size);
 void grid_free(const t_grid* g);
 void grid_print(const t_grid* g, FILE* fd);
 bool check_char(const char c);
+void file_parser(t_grid* grid, char* filename);
 
 void end_of_main(char* output);
 static struct Params parameters;
@@ -190,7 +193,11 @@ void grid_free(const t_grid* g){
 
     free(g->grid);
 }
-
+/**
+ * print the current grid in an output file, because this function is given a FILE*, it's not its role to close and free it
+ * @param g
+ * @param fd
+ */
 void grid_print(const t_grid* g, FILE* fd){
     if(g==NULL){
         warnx("grid given to print in file is NULL");
@@ -209,6 +216,19 @@ bool check_char(const char c){
     return c=='0' || c=='1' || c=='_';
 }
 
+void file_parser(t_grid* grid, char* filename){
+    FILE* file;
+    file = fopen(filename, "r");
+
+    char buffer[MAX_BUFFER];
+    if(fgets(buffer, MAX_BUFFER, file)!=NULL)
+        printf("%s",buffer);
+
+    fclose(file);
+}
+
+
+
 void end_of_main(char* output){
     FILE* file;
     file = fopen(output, "w+");
@@ -224,5 +244,6 @@ void end_of_main(char* output){
     fclose(file);
     grid_free(myGrid);
 
-    free(myGrid);
+    file_parser(myGrid, parameters.input);
+
 }
