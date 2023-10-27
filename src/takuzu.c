@@ -229,8 +229,8 @@ void grid_allocate(t_grid *g, int size) {
 
 void grid_free(const t_grid *g) {
     for (int i = 0; i < g->size; ++i) {
-        //check that lines are not null #TODO
-        free(g->grid[i]);
+        if(g->grid[i]!=NULL)
+            free(g->grid[i]);
     }
 
     free(g->grid);
@@ -266,13 +266,15 @@ bool check_separator(const char c) {
 void file_parser(t_grid *grid, char *filename) {
     FILE *file;
     file = fopen(filename, "r");
-    //check that the open is correct #TODO
-    //or reuse previous open
+    if(file==NULL){
+        errx(EXIT_FAILURE, "can't open file %s in function file_parser.", filename);
+    }
+
 
     char buffer[MAX_BUFFER];
     char *line;
     int current_line = 0;
-    int temp_size=0;
+    int temp_size;
 
 
     //let's read the first line, find the size of the grid and allocate the grid to store the data parsed
@@ -368,6 +370,10 @@ char *readLine(char *line, int size, int current_line) {
             } else if(check_separator(current_char)){
                 continue;
             } else if(check_char(current_char)){
+                if(current_index>size){
+                    errx(EXIT_FAILURE,"Exceeding 64 significant characters, grid cannot be bigger, exiting.");
+                }
+
                 line_of_grid[current_index] = current_char;
                 current_index++;
             } else{
@@ -377,11 +383,9 @@ char *readLine(char *line, int size, int current_line) {
             }
 
         }
-        //check number of characters, must not exceed size of line_of_grid #TODO
 
     }
     line_of_grid[current_index]='\n';
-    //may be useless, use strlen ? #TODO
     return line_of_grid;
 }
 
