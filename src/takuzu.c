@@ -229,6 +229,7 @@ void grid_allocate(t_grid *g, int size) {
 
 void grid_free(const t_grid *g) {
     for (int i = 0; i < g->size; ++i) {
+        //check that lines are not null #TODO
         free(g->grid[i]);
     }
 
@@ -265,6 +266,8 @@ bool check_separator(const char c) {
 void file_parser(t_grid *grid, char *filename) {
     FILE *file;
     file = fopen(filename, "r");
+    //check that the open is correct #TODO
+    //or reuse previous open
 
     char buffer[MAX_BUFFER];
     char *line;
@@ -348,7 +351,6 @@ int countCharInString(char* string){
  * @return the corresponding line of the grid (only significant characters)
  */
 char *readLine(char *line, int size, int current_line) {
-    int state = SIGNIFICANT_CHARACTER;
 
     char current_char = '\0';
     int current_index = 0;
@@ -375,9 +377,11 @@ char *readLine(char *line, int size, int current_line) {
             }
 
         }
+        //check number of characters, must not exceed size of line_of_grid #TODO
 
     }
     line_of_grid[current_index]='\n';
+    //may be useless, use strlen ? #TODO
     return line_of_grid;
 }
 
