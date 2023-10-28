@@ -2,7 +2,6 @@
 #include <err.h>
 
 #include "../include/grid.h"
-#include "../include/takuzu.h"
 
 
 void grid_allocate(t_grid *g, int size) {
@@ -56,4 +55,33 @@ void grid_print(const t_grid *g, FILE *fd) {
         }
         fprintf(fd, "%c", '\n');
     }
+}
+
+void grid_copy(t_grid *grid_to_copy, t_grid *grid_result){
+    if(grid_to_copy==NULL){
+        errx(EXIT_FAILURE, "trying to copy an unallocated grid");
+    }
+    grid_allocate(grid_result, grid_to_copy->size);
+
+    for (int i = 0; i != grid_to_copy->size; i++) {
+        for (int j = 0; j != grid_to_copy->size; j++) {
+            grid_result->grid[i][j] = grid_to_copy->grid[i][j];
+        }
+    }
+}
+
+void set_cell(int i, int j, t_grid *g, char c){
+    if(g==NULL){
+        errx(EXIT_FAILURE, "trying to setting a cell on an unallocated grid");
+    }
+
+    g->grid[i][j] = c;
+}
+
+char get_cell(int i, int j, t_grid *g){
+    if(g==NULL){
+        errx(EXIT_FAILURE, "trying to get a cell from an unallocated grid");
+    }
+
+    return g->grid[i][j];
 }
