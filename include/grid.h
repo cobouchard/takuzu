@@ -2,6 +2,8 @@
 #define GRID_H
 
 #include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 typedef struct {
     int size;
@@ -19,5 +21,11 @@ void grid_copy(t_grid *grid_to_copy, t_grid *grid_result);
 void set_cell(int i, int j, t_grid *g, char c);
 
 char get_cell(int i, int j, t_grid *g);
+
+int64_t lineToInt(t_grid *g, int line);
+
+int64_t columnToInt(t_grid *g, int column);
+
+bool checkLinesColumnsDifferent(t_grid *g);
 
 #endif 

@@ -1,5 +1,8 @@
 #include <stdlib.h>
 #include <err.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <inttypes.h>
 
 #include "../include/grid.h"
 
@@ -30,8 +33,9 @@ void grid_allocate(t_grid *g, int size) {
 
 void grid_free(const t_grid *g) {
     for (int i = 0; i < g->size; ++i) {
-        if(g->grid[i]!=NULL)
+        if(g->grid[i]!=NULL) {
             free(g->grid[i]);
+        }
     }
 
     free(g->grid);
@@ -84,4 +88,34 @@ char get_cell(int i, int j, t_grid *g){
     }
 
     return g->grid[i][j];
+}
+
+int64_t lineToInt(t_grid *g, int line){
+    int64_t code = INT64_C(0);
+
+    for(int column=0; column!=g->size; column++){
+        if(g->grid[line][column]=='1'){
+            code = code | (1<<column);
+        }
+
+    }
+
+    return code;
+}
+
+int64_t columnToInt(t_grid *g, int column){
+    int64_t code = INT64_C(0);
+
+    for(int line=0; line!=g->size; line++){
+        if(g->grid[line][column]=='1'){
+            code = code | (1<<line);
+        }
+
+    }
+
+    return code;
+}
+
+bool checkLinesColumnsDifferent(t_grid *g){
+    return true;
 }
