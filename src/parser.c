@@ -1,0 +1,144 @@
+#include <stdbool.h>
+#include <stdlib.h>
+#include <err.h>
+
+#include "../include/parser.h"
+#include "../include/takuzu.h"
+
+#define MAX_BUFFER 256
+#define MAX_GRID_SIZE 64
+
+
+bool check_char(const char c) {
+    return c == '0' || c == '1' || c == '_';
+}
+
+bool check_separator(const char c) {
+    return c == '\t' || c == ' ';
+}
+
+void file_parser(t_grid *grid, char *filename, int* parameters_size) {
+    FILE *file;
+    file = fopen(filename, "r");
+    if(file==NULL){
+        errx(EXIT_FAILURE, "can't open file %s in function file_parser.", filename);
+    }
+
+
+    char buffer[MAX_BUFFER];
+    char *line;
+    int current_line = 0;
+    int temp_size;
+
+
+    //let's read the first line, find the size of the grid and allocate the grid to store the data parsed
+
+    do{
+        if (fgets(buffer, MAX_BUFFER, file) != NULL) {
+            line = readLine(buffer, MAX_GRID_SIZE, current_line);
+            temp_size = countCharInString(line);
+        }
+        else{
+            errx(EXIT_FAILURE, "File %s is empty !", filename);
+        }
+    }while(temp_size==0);
+
+    temp_size = checkArgGeneratorInt(temp_size);
+    current_line++;
+
+    if(temp_size==-1){
+        errx(EXIT_FAILURE, "Incorrect number of significant characters, grid size must be 4, 8, 16, 32 or 64.\n");
+    }
+    *parameters_size=temp_size;
+    grid_allocate(grid,*parameters_size);
+    for(int i=0; i!=*parameters_size; i++){
+        grid->grid[0][i]=line[i];
+    }
+
+    //we will now check that the next lines are the same size as the first one and finish the parsing of the file
+
+    while(fgets(buffer, MAX_BUFFER, file) != NULL){
+
+        line = readLine(buffer, *parameters_size, current_line);
+        int current_size=countCharInString(line);
+
+
+        //there are no significant characters, empty line or commented line
+        if(current_size==0) {
+            //we go to the next line
+            continue;
+        }
+
+
+        if(current_size!=*parameters_size){
+            errx(EXIT_FAILURE,"Incorrect number of significant characters '%d' in line '%d'; %d was expected as in the first uncommented line.\n", current_size, current_line, *parameters_size);
+        }
+
+        for(int i=0; i!=*parameters_size; i++){
+            grid->grid[current_line][i]=line[i];
+        }
+        current_line++;
+
+    }
+
+    if(current_line!=*parameters_size){
+        errx(EXIT_FAILURE, "Incorrect number of lines, %d lines found.", current_line);
+    }
+
+    fclose(file);
+}
+
+int countCharInString(char* string){
+    int sum=0;
+
+    char c = string[0];
+    while(c!='\n' && c!='\0'){
+        sum++;
+        c=string[sum];
+    }
+
+    return sum;
+}
+
+/**
+ *
+ * @param line
+ * @param size size of the grid if known, if not known (first time going in this function, should be size 64 and the size will be determined thanks to the first line
+ * @return the corresponding line of the grid (only significant characters)
+ */
+char *readLine(char *line, int size, int current_line) {
+
+    char current_char = '\0';
+    int current_index = 0;
+    char *line_of_grid = (char *) malloc(size * sizeof(char *));
+    if (line_of_grid == NULL) {
+        warnx("Fail in the allocation of line_of_grid in readLine function");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; current_char != '\n'; i++) {
+        current_char = line[i];
+        if (current_char != '\n') {
+            if (current_char == '#') {
+                current_char='\n';
+            } else if(check_separator(current_char)){
+                continue;
+            } else if(check_char(current_char)){
+                if(current_index>size){
+                    errx(EXIT_FAILURE,"Exceeding 64 significant characters, grid cannot be bigger, exiting.");
+                }
+
+                line_of_grid[current_index] = current_char;
+                current_index++;
+            } else{
+                errx(EXIT_FAILURE,
+                     "Unexpected character '%c' at line %d, column %d, a significant character was expected.\n",
+                     current_char, ++current_line, ++current_index);
+            }
+
+        }
+
+    }
+    line_of_grid[current_index]='\n';
+    return line_of_grid;
+}

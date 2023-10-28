@@ -20,15 +20,6 @@ int checkArgGenerator(char *arg);
 
 int checkArgGeneratorInt(int N);
 
-bool check_char(const char c);
-
-bool check_separator(const char c);
-
-void file_parser(t_grid *grid, char *filename);
-
-char *readLine(char *line, int size, int current_line);
-
-int countCharInString(char* string);
 
 void end_of_main(char *output);
 
