@@ -117,12 +117,18 @@ int main(int argc, char *argv[]) {
         fclose(file);
         printf("opening the grid from \"%s\" file\n", input);
         parameters.input = input;
+
+        if(parameters.output==NULL){
+            end_of_main("grid_sortie.txt");
+        }else{
+            end_of_main(parameters.output);
+        }
     } else if (argv[optind] != NULL) {
         errx(EXIT_FAILURE, "too many arguments for generator mode, no file needed");
     }
 
 
-    end_of_main("grid_sortie.txt");
+
 }
 
 void print_help() {
@@ -148,7 +154,7 @@ int checkArgGenerator(char *arg) {
         return false;
     }
 
-    checkArgGeneratorInt(temp_N);
+    return checkArgGeneratorInt(temp_N);
 }
 
 int checkArgGeneratorInt(int N){
