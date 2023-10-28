@@ -4,6 +4,9 @@
 #include <getopt.h>
 #include <err.h>
 
+#include "../include/takuzu.h"
+#include "../include/grid.h"
+
 #define DEFAULT_VERBOSE 0
 #define DEFAULT_SOLVER_MODE true
 #define DEFAULT_ALL false
@@ -18,30 +21,15 @@
 #define SIGNIFICANT_CHARACTER 1
 #define SEPARATOR 2
 
-struct Params {
-    int verbose_flag;
-    bool solver_mode; //The program is on solver_mode by default, set to false if the program is running on generation mode
-    bool unique;
-    bool all;
-    int N;
-    char *output;
-    char *input;
-};
 
-typedef struct {
-    int size;
-    char **grid;
-} t_grid;
+
+
 
 void print_help();
 
 int checkArgGenerator(char *arg);
 
 int checkArgGeneratorInt(int N);
-
-void grid_allocate(t_grid *g, int size);
-
-void grid_free(const t_grid *g);
 
 void grid_print(const t_grid *g, FILE *fd);
 
@@ -204,37 +192,8 @@ int checkArgGeneratorInt(int N){
     return -1;
 }
 
-void grid_allocate(t_grid *g, int size) {
-    g->grid = (char **) malloc(size * sizeof(char *));
 
-    g->size = size;
-    if (g->grid == NULL) {
-        warnx("Fail in the allocation of grid in t_grid");
-        exit(EXIT_FAILURE);
-    }
 
-    for (int i = 0; i < size; ++i) {
-        g->grid[i] = (char *) malloc(size * sizeof(char));
-        if (g->grid[i] == NULL) {
-            grid_free(g);
-            warnx("Fail in the allocation of each row of grid in t_grid");
-            exit(EXIT_FAILURE);
-        }
-
-        for (int j = 0; j < size; ++j) {
-            g->grid[i][j] = '_';
-        }
-    }
-}
-
-void grid_free(const t_grid *g) {
-    for (int i = 0; i < g->size; ++i) {
-        if(g->grid[i]!=NULL)
-            free(g->grid[i]);
-    }
-
-    free(g->grid);
-}
 
 /**
  * print the current grid in an output file, because this function is given a FILE*, it's not its role to close and free it

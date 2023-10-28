@@ -4,11 +4,14 @@ lDFLAGS = -lgetopt -lm
 
 all: takuzu
 
-takuzu: takuzu.o
+takuzu: takuzu.o grid.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 takuzu.o: takuzu.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
+
+grid.o: grid.c ../include/grid.h
+	$(CC) $(CLAFGS) $(CPPFLAGS) -c grid.c
 
 clean: 
 	@rm -f *.o takuzu
