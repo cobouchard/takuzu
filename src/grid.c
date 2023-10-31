@@ -2,8 +2,6 @@
 #include <err.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <inttypes.h>
-
 #include "../include/grid.h"
 
 
@@ -90,11 +88,21 @@ char get_cell(int i, int j, t_grid *g){
     return g->grid[i][j];
 }
 
+/**
+ *
+ * @param g
+ * @param line
+ * @return generate a 64-bits long integer, two identical lines generate the same number, return 0 if there is an '_' meaning that this line will be different than any other line
+ */
 int64_t lineToInt(t_grid *g, int line){
     int64_t code = INT64_C(0);
 
     for(int column=0; column!=g->size; column++){
-        if(g->grid[line][column]=='1'){
+        char temp = g->grid[line][column];
+        if(temp=='_'){
+            return 0;
+        }
+        if(temp=='1'){
             code = code | (1<<column);
         }
 
@@ -103,11 +111,16 @@ int64_t lineToInt(t_grid *g, int line){
     return code;
 }
 
+//same function but columns
 int64_t columnToInt(t_grid *g, int column){
     int64_t code = INT64_C(0);
 
     for(int line=0; line!=g->size; line++){
-        if(g->grid[line][column]=='1'){
+        char temp = g->grid[line][column];
+        if(temp=='_'){
+            return 0;
+        }
+        if(temp=='1'){
             code = code | (1<<line);
         }
 
@@ -116,6 +129,19 @@ int64_t columnToInt(t_grid *g, int column){
     return code;
 }
 
+/**
+ *
+ * @param g
+ * @return return true if no lines nor columns are identical
+ */
 bool checkLinesColumnsDifferent(t_grid *g){
+    int64_t linesCode[g->size];
+    int64_t columnsCode[g->size];
+
+    for(int i=0; i!=g->size; i++){
+        linesCode[i] = lineToInt(g, i);
+        columnsCode[i] = columnToInt(g,i);
+    }
+
     return true;
 }
