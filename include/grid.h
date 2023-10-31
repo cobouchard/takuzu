@@ -28,4 +28,7 @@ int64_t columnToInt(t_grid *g, int column);
 
 bool checkLinesColumnsDifferent(t_grid *g);
 
+bool hasConsecutiveOnes(int64_t number);
+
+bool hasConsecutiveZeroes(int64_t number, int size);
 #endif 

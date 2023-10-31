@@ -111,7 +111,7 @@ int64_t lineToInt(t_grid *g, int line){
     return code;
 }
 
-//same function but columns
+//same function but for columns
 int64_t columnToInt(t_grid *g, int column){
     int64_t code = INT64_C(0);
 
@@ -143,5 +143,44 @@ bool checkLinesColumnsDifferent(t_grid *g){
         columnsCode[i] = columnToInt(g,i);
     }
 
+    for(int i=0; i!=g->size; i++){
+        for(int j=i+1; j!=g->size; j++){
+            if(i!=j) {
+                if( (linesCode[i] == linesCode[j] && linesCode[i]!=0) || (columnsCode[i] == columnsCode[j] && columnsCode[i]!=0) ){
+                    return false;
+                }
+            }
+        }
+    }
+
     return true;
+}
+
+/**
+ *
+ * @param g
+ * @return return true is there are no consecutive 0 or consecutive 1
+ */
+bool checkConsecutiveCharacters(t_grid *g){
+    int64_t linesCode[g->size];
+    int64_t columnsCode[g->size];
+
+    for(int i=0; i!=g->size; i++){
+
+    }
+
+    return false;
+}
+
+
+bool hasConsecutiveOnes(int64_t number){
+    return number & (number>>1) & (number>>2);
+}
+
+bool hasConsecutiveZeroes(int64_t number, int size){
+    int64_t temp = -number;
+    int64_t mask = INT64_MAX >> (64-size-1);
+    temp &= mask;
+    printf("%d",temp);
+    return hasConsecutiveOnes(temp);
 }

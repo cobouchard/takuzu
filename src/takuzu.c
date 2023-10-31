@@ -177,12 +177,14 @@ void end_of_main(char *output) {
     file_parser(myGrid, parameters.input, &(parameters.N));
     grid_print(myGrid, file);
 
-    for(int i=0; i!=myGrid->size; i++){
-        printf("the code for column %d is %ld\n", i,columnToInt(myGrid,i));
-    }
-    for(int i=0; i!=myGrid->size; i++){
-        printf("the code for line %d is %ld\n", i,lineToInt(myGrid,i));
-    }
+    /*for(int line=0; line!=myGrid->size; line++){
+        if(hasConsecutiveZeroes(lineToInt(myGrid,line),myGrid->size))
+            printf("Ligne %d, VRAI\n", line);
+        else
+            printf("Ligne %d, FAUX\n", line);
+    }*/
+
+
 
 
     fclose(file);
