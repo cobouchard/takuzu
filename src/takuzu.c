@@ -14,8 +14,6 @@
 #define DEFAULT_UNIQUE false
 
 
-
-
 static struct Params parameters;
 
 int main(int argc, char *argv[]) {
@@ -118,15 +116,14 @@ int main(int argc, char *argv[]) {
         printf("opening the grid from \"%s\" file\n", input);
         parameters.input = input;
 
-        if(parameters.output==NULL){
+        if (parameters.output == NULL) {
             end_of_main("grid_sortie.txt");
-        }else{
+        } else {
             end_of_main(parameters.output);
         }
     } else if (argv[optind] != NULL) {
         errx(EXIT_FAILURE, "too many arguments for generator mode, no file needed");
     }
-
 
 
 }
@@ -157,14 +154,13 @@ int checkArgGenerator(char *arg) {
     return checkArgGeneratorInt(temp_N);
 }
 
-int checkArgGeneratorInt(int N){
+int checkArgGeneratorInt(int N) {
     if (N == 4 || N == 8 || N == 16 || N == 32 || N == 64) {
         return N;
     }
 
     return -1;
 }
-
 
 
 void end_of_main(char *output) {
@@ -177,14 +173,8 @@ void end_of_main(char *output) {
     file_parser(myGrid, parameters.input, &(parameters.N));
     grid_print(myGrid, file);
 
-    /*for(int line=0; line!=myGrid->size; line++){
-        if(hasConsecutiveZeroes(lineToInt(myGrid,line),myGrid->size))
-            printf("Ligne %d, VRAI\n", line);
-        else
-            printf("Ligne %d, FAUX\n", line);
-    }*/
 
-    if(!checkConsecutiveCharacters(myGrid))
+    if (!checkConsecutiveCharacters(myGrid))
         printf("HAS CONSECUTIVE CHARACTERS\n");
     else
         printf("DOESN'T HAVE CONSECUTIVE\n");

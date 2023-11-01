@@ -31,7 +31,7 @@ void grid_allocate(t_grid *g, int size) {
 
 void grid_free(const t_grid *g) {
     for (int i = 0; i < g->size; ++i) {
-        if(g->grid[i]!=NULL) {
+        if (g->grid[i] != NULL) {
             free(g->grid[i]);
         }
     }
@@ -59,8 +59,8 @@ void grid_print(const t_grid *g, FILE *fd) {
     }
 }
 
-void grid_copy(t_grid *grid_to_copy, t_grid *grid_result){
-    if(grid_to_copy==NULL){
+void grid_copy(t_grid *grid_to_copy, t_grid *grid_result) {
+    if (grid_to_copy == NULL) {
         errx(EXIT_FAILURE, "trying to copy an unallocated grid");
     }
     grid_allocate(grid_result, grid_to_copy->size);
@@ -72,16 +72,16 @@ void grid_copy(t_grid *grid_to_copy, t_grid *grid_result){
     }
 }
 
-void set_cell(int i, int j, t_grid *g, char c){
-    if(g==NULL){
+void set_cell(int i, int j, t_grid *g, char c) {
+    if (g == NULL) {
         errx(EXIT_FAILURE, "trying to setting a cell on an unallocated grid");
     }
 
     g->grid[i][j] = c;
 }
 
-char get_cell(int i, int j, t_grid *g){
-    if(g==NULL){
+char get_cell(int i, int j, t_grid *g) {
+    if (g == NULL) {
         errx(EXIT_FAILURE, "trying to get a cell from an unallocated grid");
     }
 
@@ -94,14 +94,14 @@ char get_cell(int i, int j, t_grid *g){
  * @param line
  * @return generate a 64-bits long integer, two identical lines generate the same number, return 0 if there is an '_' meaning that this line will be different than any other line
  */
-int64_t lineToInt(t_grid *g, int line, char c){
+int64_t lineToInt(t_grid *g, int line, char c) {
     int64_t code = INT64_C(0);
 
-    for(int column=0; column!=g->size; column++){
+    for (int column = 0; column != g->size; column++) {
         char temp = g->grid[line][column];
 
-        if(temp==c){
-            code = code | (1<<column);
+        if (temp == c) {
+            code = code | (1 << column);
         }
 
     }
@@ -110,13 +110,13 @@ int64_t lineToInt(t_grid *g, int line, char c){
 }
 
 //same function but for columns
-int64_t columnToInt(t_grid *g, int column, char c){
+int64_t columnToInt(t_grid *g, int column, char c) {
     int64_t code = INT64_C(0);
 
-    for(int line=0; line!=g->size; line++){
+    for (int line = 0; line != g->size; line++) {
         char temp = g->grid[line][column];
-        if(temp==c){
-            code = code | (1<<line);
+        if (temp == c) {
+            code = code | (1 << line);
         }
 
     }
@@ -129,29 +129,29 @@ int64_t columnToInt(t_grid *g, int column, char c){
  * @param g
  * @return return true if no lines nor columns are identical
  */
-bool checkLinesColumnsDifferent(t_grid *g){
+bool checkLinesColumnsDifferent(t_grid *g) {
     int64_t linesCodeOnes[g->size];
     int64_t columnsCodeOnes[g->size];
 
     int64_t linesCodeZeroes[g->size];
     int64_t columnsCodeZeroes[g->size];
 
-    for(int i=0; i!=g->size; i++){
-        linesCodeOnes[i] = lineToInt(g, i,'1');
-        columnsCodeOnes[i] = columnToInt(g,i,'1');
-        linesCodeZeroes[i] = lineToInt(g, i,'0');
-        columnsCodeZeroes[i] = columnToInt(g,i,'0');
+    for (int i = 0; i != g->size; i++) {
+        linesCodeOnes[i] = lineToInt(g, i, '1');
+        columnsCodeOnes[i] = columnToInt(g, i, '1');
+        linesCodeZeroes[i] = lineToInt(g, i, '0');
+        columnsCodeZeroes[i] = columnToInt(g, i, '0');
     }
 
-    for(int i=0; i!=g->size; i++){
-        if((linesCodeOnes[i]|linesCodeZeroes[i]) != (1 << g->size) - 1){
+    for (int i = 0; i != g->size; i++) {
+        if ((linesCodeOnes[i] | linesCodeZeroes[i]) != (1 << g->size) - 1) {
             //there is an underscore, lines are necessarily different
             continue;
         }
-        for(int j=i+1; j!=g->size; j++){
-            if(i!=j) {
+        for (int j = i + 1; j != g->size; j++) {
+            if (i != j) {
                 //if the position of zeroes and one is the same in both lines resp columns, the two are equals
-                if ( linesCodeOnes[i]==linesCodeOnes[j] && linesCodeZeroes[i]==linesCodeZeroes[j]   ){
+                if (linesCodeOnes[i] == linesCodeOnes[j] && linesCodeZeroes[i] == linesCodeZeroes[j]) {
                     return false;
                 }
             }
@@ -166,32 +166,25 @@ bool checkLinesColumnsDifferent(t_grid *g){
  * @param g
  * @return return true is there are no consecutive 0 or consecutive 1
  */
-bool checkConsecutiveCharacters(t_grid *g){
+bool checkConsecutiveCharacters(t_grid *g) {
     int64_t linesCodeOnes[g->size];
     int64_t columnsCodeOnes[g->size];
 
     int64_t linesCodeZeroes[g->size];
     int64_t columnsCodeZeroes[g->size];
 
-    for(int i=0; i!=g->size; i++){
-        linesCodeOnes[i] = lineToInt(g, i,'1');
-        columnsCodeOnes[i] = columnToInt(g,i,'1');
-        linesCodeZeroes[i] = lineToInt(g, i,'0');
-        columnsCodeZeroes[i] = columnToInt(g,i,'0');
+    for (int i = 0; i != g->size; i++) {
+        linesCodeOnes[i] = lineToInt(g, i, '1');
+        columnsCodeOnes[i] = columnToInt(g, i, '1');
+        linesCodeZeroes[i] = lineToInt(g, i, '0');
+        columnsCodeZeroes[i] = columnToInt(g, i, '0');
     }
 
 
-    for(int i=0; i!=g->size; i++){
-        if(hasConsecutiveCharacters(linesCodeZeroes[i])){
-            return false;
-        }
-        if(hasConsecutiveCharacters(linesCodeOnes[i])){
-            return false;
-        }
-        if(hasConsecutiveCharacters(columnsCodeZeroes[i])){
-            return false;
-        }
-        if(hasConsecutiveCharacters(columnsCodeOnes[i])){
+    for (int i = 0; i != g->size; i++) {
+        //check that there are no 3 consecutive 0 or 1 in lines and columns
+        if (hasConsecutiveCharacters(linesCodeZeroes[i]) || hasConsecutiveCharacters(linesCodeOnes[i]) ||
+            hasConsecutiveCharacters(columnsCodeZeroes[i]) || hasConsecutiveCharacters(columnsCodeOnes[i])) {
             return false;
         }
     }
@@ -200,6 +193,6 @@ bool checkConsecutiveCharacters(t_grid *g){
 }
 
 
-bool hasConsecutiveCharacters(int64_t number){
-    return number & (number>>1) & (number>>2);
+bool hasConsecutiveCharacters(int64_t number) {
+    return number & (number >> 1) & (number >> 2);
 }
