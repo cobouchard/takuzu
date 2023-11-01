@@ -94,15 +94,13 @@ char get_cell(int i, int j, t_grid *g){
  * @param line
  * @return generate a 64-bits long integer, two identical lines generate the same number, return 0 if there is an '_' meaning that this line will be different than any other line
  */
-int64_t lineToInt(t_grid *g, int line){
+int64_t lineToInt(t_grid *g, int line, char c){
     int64_t code = INT64_C(0);
 
     for(int column=0; column!=g->size; column++){
         char temp = g->grid[line][column];
-        if(temp=='_'){
-            return 0;
-        }
-        if(temp=='1'){
+
+        if(temp==c){
             code = code | (1<<column);
         }
 
@@ -112,15 +110,12 @@ int64_t lineToInt(t_grid *g, int line){
 }
 
 //same function but for columns
-int64_t columnToInt(t_grid *g, int column){
+int64_t columnToInt(t_grid *g, int column, char c){
     int64_t code = INT64_C(0);
 
     for(int line=0; line!=g->size; line++){
         char temp = g->grid[line][column];
-        if(temp=='_'){
-            return 0;
-        }
-        if(temp=='1'){
+        if(temp==c){
             code = code | (1<<line);
         }
 
@@ -135,18 +130,28 @@ int64_t columnToInt(t_grid *g, int column){
  * @return return true if no lines nor columns are identical
  */
 bool checkLinesColumnsDifferent(t_grid *g){
-    int64_t linesCode[g->size];
-    int64_t columnsCode[g->size];
+    int64_t linesCodeOnes[g->size];
+    int64_t columnsCodeOnes[g->size];
+
+    int64_t linesCodeZeroes[g->size];
+    int64_t columnsCodeZeroes[g->size];
 
     for(int i=0; i!=g->size; i++){
-        linesCode[i] = lineToInt(g, i);
-        columnsCode[i] = columnToInt(g,i);
+        linesCodeOnes[i] = lineToInt(g, i,'1');
+        columnsCodeOnes[i] = columnToInt(g,i,'1');
+        linesCodeZeroes[i] = lineToInt(g, i,'0');
+        columnsCodeZeroes[i] = columnToInt(g,i,'0');
     }
 
     for(int i=0; i!=g->size; i++){
+        if((linesCodeOnes[i]|linesCodeZeroes[i]) != (1 << g->size) - 1){
+            //there is an underscore, lines are necessarily different
+            continue;
+        }
         for(int j=i+1; j!=g->size; j++){
             if(i!=j) {
-                if( (linesCode[i] == linesCode[j] && linesCode[i]!=0) || (columnsCode[i] == columnsCode[j] && columnsCode[i]!=0) ){
+                //if the position of zeroes and one is the same in both lines resp columns, the two are equals
+                if ( linesCodeOnes[i]==linesCodeOnes[j] && linesCodeZeroes[i]==linesCodeZeroes[j]   ){
                     return false;
                 }
             }
@@ -162,25 +167,39 @@ bool checkLinesColumnsDifferent(t_grid *g){
  * @return return true is there are no consecutive 0 or consecutive 1
  */
 bool checkConsecutiveCharacters(t_grid *g){
-    int64_t linesCode[g->size];
-    int64_t columnsCode[g->size];
+    int64_t linesCodeOnes[g->size];
+    int64_t columnsCodeOnes[g->size];
+
+    int64_t linesCodeZeroes[g->size];
+    int64_t columnsCodeZeroes[g->size];
 
     for(int i=0; i!=g->size; i++){
-
+        linesCodeOnes[i] = lineToInt(g, i,'1');
+        columnsCodeOnes[i] = columnToInt(g,i,'1');
+        linesCodeZeroes[i] = lineToInt(g, i,'0');
+        columnsCodeZeroes[i] = columnToInt(g,i,'0');
     }
 
-    return false;
+
+    for(int i=0; i!=g->size; i++){
+        if(hasConsecutiveCharacters(linesCodeZeroes[i])){
+            return false;
+        }
+        if(hasConsecutiveCharacters(linesCodeOnes[i])){
+            return false;
+        }
+        if(hasConsecutiveCharacters(columnsCodeZeroes[i])){
+            return false;
+        }
+        if(hasConsecutiveCharacters(columnsCodeOnes[i])){
+            return false;
+        }
+    }
+
+    return true;
 }
 
 
-bool hasConsecutiveOnes(int64_t number){
+bool hasConsecutiveCharacters(int64_t number){
     return number & (number>>1) & (number>>2);
-}
-
-bool hasConsecutiveZeroes(int64_t number, int size){
-    int64_t temp = -number;
-    int64_t mask = INT64_MAX >> (64-size-1);
-    temp &= mask;
-    printf("%d",temp);
-    return hasConsecutiveOnes(temp);
 }

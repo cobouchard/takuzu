@@ -22,13 +22,14 @@ void set_cell(int i, int j, t_grid *g, char c);
 
 char get_cell(int i, int j, t_grid *g);
 
-int64_t lineToInt(t_grid *g, int line);
+int64_t lineToInt(t_grid *g, int line, char c);
 
-int64_t columnToInt(t_grid *g, int column);
+int64_t columnToInt(t_grid *g, int column, char c);
 
 bool checkLinesColumnsDifferent(t_grid *g);
 
-bool hasConsecutiveOnes(int64_t number);
+bool checkConsecutiveCharacters(t_grid *g);
 
-bool hasConsecutiveZeroes(int64_t number, int size);
+bool hasConsecutiveCharacters(int64_t number);
+
 #endif 

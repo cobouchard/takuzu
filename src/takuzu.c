@@ -184,7 +184,10 @@ void end_of_main(char *output) {
             printf("Ligne %d, FAUX\n", line);
     }*/
 
-
+    if(!checkConsecutiveCharacters(myGrid))
+        printf("HAS CONSECUTIVE CHARACTERS\n");
+    else
+        printf("DOESN'T HAVE CONSECUTIVE\n");
 
 
     fclose(file);
