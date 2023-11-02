@@ -29,7 +29,7 @@ void grid_allocate(t_grid *g, int size) {
 
 
 void grid_free(const t_grid *g) {
-    if(g==NULL){
+    if (g == NULL) {
         return;
     }
     for (int i = 0; i < g->size; ++i) {
@@ -105,7 +105,6 @@ int64_t lineToInt(t_grid *g, int line, char c) {
         if (temp == c) {
             code = code | (1 << column);
         }
-
     }
 
     return code;

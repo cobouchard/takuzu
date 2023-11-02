@@ -17,10 +17,10 @@ bool check_separator(const char c) {
     return c == '\t' || c == ' ';
 }
 
-void file_parser(t_grid *grid, char *filename, int* parameters_size) {
+void file_parser(t_grid *grid, char *filename, int *parameters_size) {
     FILE *file;
     file = fopen(filename, "r");
-    if(file==NULL){
+    if (file == NULL) {
         errx(EXIT_FAILURE, "can't open file %s in function file_parser.", filename);
     }
 
@@ -28,79 +28,72 @@ void file_parser(t_grid *grid, char *filename, int* parameters_size) {
 
     int current_line = 0;
     int temp_size;
-    char* first_line = (char *)calloc(MAX_BUFFER, sizeof (char));
+    char *first_line = (char *) calloc(MAX_BUFFER, sizeof(char));
 
     //let's read the first line, find the size of the grid and allocate the grid to store the data parsed
 
-
-    do{
+    do {
         if (fgets(buffer, MAX_BUFFER, file) != NULL) {
             readLine(buffer, MAX_GRID_SIZE, current_line, first_line);
             temp_size = countCharInString(first_line);
-        }
-        else{
+        } else {
             errx(EXIT_FAILURE, "File %s is empty !", filename);
         }
-    }while(temp_size==0);
+    } while (temp_size == 0);
 
-    *parameters_size=temp_size;
-    grid_allocate(grid,*parameters_size);
     temp_size = checkArgGeneratorInt(temp_size);
-
-
-    if(temp_size==-1){
+    if (temp_size == -1) {
         errx(EXIT_FAILURE, "Incorrect number of significant characters, grid size must be 4, 8, 16, 32 or 64.\n");
     }
-    for(int i=0; i!=*parameters_size; i++){
-        grid->grid[0][i]=first_line[i];
+
+    *parameters_size = temp_size;
+    grid_allocate(grid, *parameters_size);
+
+    for (int i = 0; i != *parameters_size; i++) {
+        grid->grid[0][i] = first_line[i];
     }
     current_line++;
     free(first_line);
 
-
-    char *line = (char *)calloc(grid->size, sizeof(char));
-
     //we will now check that the next lines are the same size as the first one and finish the parsing of the file
-
-    while(fgets(buffer, MAX_BUFFER, file) != NULL){
-
+    char *line = (char *) calloc(grid->size, sizeof(char));
+    while (fgets(buffer, MAX_BUFFER, file) != NULL) {
         readLine(buffer, *parameters_size, current_line, line);
-
-        int current_size=countCharInString(line);
+        int current_size = countCharInString(line);
 
         //there are no significant characters, empty line or commented line
-        if(current_size==0) {
+        if (current_size == 0) {
             //we go to the next line
             continue;
         }
 
-        if(current_size!=*parameters_size){
-            errx(EXIT_FAILURE,"Incorrect number of significant characters '%d' in line '%d'; %d was expected as in the first uncommented line.\n", current_size, current_line+1, *parameters_size);
+        if (current_size != *parameters_size) {
+            errx(EXIT_FAILURE,
+                 "Incorrect number of significant characters '%d' in line '%d'; %d was expected as in the first uncommented line.\n",
+                 current_size, current_line + 1, *parameters_size);
         }
 
-        for(int i=0; i!=*parameters_size; i++){
-            grid->grid[current_line][i]=line[i];
+        for (int i = 0; i != *parameters_size; i++) {
+            grid->grid[current_line][i] = line[i];
         }
         current_line++;
     }
 
-    if(current_line!=*parameters_size){
+    if (current_line != *parameters_size) {
         errx(EXIT_FAILURE, "Incorrect number of lines, %d lines found.", current_line);
     }
-
 
     free(line);
     fclose(file);
 }
 
-int countCharInString(char* string){
-    int sum=0;
-
+int countCharInString(char *string) {
+    int sum = 0;
     char c = string[0];
 
-    while(c!='\n' && c!='\0'){
+    while (c != '\n' && c != '\0') {
         sum++;
-        c=string[sum];
+        c = string[sum];
     }
 
     return sum;
@@ -126,24 +119,21 @@ void readLine(char *line, int size, int current_line, char *line_to_return) {
         current_char = line[i];
         if (current_char != '\n') {
             if (current_char == '#') {
-                current_char='\n';
-            } else if(check_separator(current_char)){
+                current_char = '\n';
+            } else if (check_separator(current_char)) {
                 continue;
-            } else if(check_char(current_char)){
-                if(current_index>size){
-                    errx(EXIT_FAILURE,"Exceeding 64 significant characters, grid cannot be bigger, exiting.");
+            } else if (check_char(current_char)) {
+                if (current_index > size) {
+                    errx(EXIT_FAILURE, "Exceeding 64 significant characters, grid cannot be bigger, exiting.");
                 }
 
                 line_to_return[current_index] = current_char;
                 current_index++;
-            } else{
+            } else {
                 errx(EXIT_FAILURE,
                      "Unexpected character '%c' at line %d, column %d, a significant character was expected.\n",
                      current_char, ++current_line, ++current_index);
             }
-
         }
-
     }
-
 }
