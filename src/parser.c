@@ -28,7 +28,7 @@ void file_parser(t_grid *grid, char *filename, int* parameters_size) {
 
     int current_line = 0;
     int temp_size;
-    char* first_line = (char *)malloc(MAX_BUFFER * sizeof(char *));
+    char* first_line = (char *)calloc(MAX_BUFFER, sizeof (char));
 
     //let's read the first line, find the size of the grid and allocate the grid to store the data parsed
 
@@ -43,30 +43,29 @@ void file_parser(t_grid *grid, char *filename, int* parameters_size) {
         }
     }while(temp_size==0);
 
-    free(first_line);
+    *parameters_size=temp_size;
+    grid_allocate(grid,*parameters_size);
     temp_size = checkArgGeneratorInt(temp_size);
-    current_line++;
+
 
     if(temp_size==-1){
         errx(EXIT_FAILURE, "Incorrect number of significant characters, grid size must be 4, 8, 16, 32 or 64.\n");
     }
-
-
-    *parameters_size=temp_size;
-
-    grid_allocate(grid,*parameters_size);
-
-    char *line = (char *)malloc(grid->size * sizeof(char *));
-
     for(int i=0; i!=*parameters_size; i++){
-        grid->grid[0][i]=line[i];
+        grid->grid[0][i]=first_line[i];
     }
+    current_line++;
+    free(first_line);
+
+
+    char *line = (char *)calloc(grid->size, sizeof(char));
 
     //we will now check that the next lines are the same size as the first one and finish the parsing of the file
 
     while(fgets(buffer, MAX_BUFFER, file) != NULL){
 
         readLine(buffer, *parameters_size, current_line, line);
+
         int current_size=countCharInString(line);
 
         //there are no significant characters, empty line or commented line
@@ -74,7 +73,6 @@ void file_parser(t_grid *grid, char *filename, int* parameters_size) {
             //we go to the next line
             continue;
         }
-
 
         if(current_size!=*parameters_size){
             errx(EXIT_FAILURE,"Incorrect number of significant characters '%d' in line '%d'; %d was expected as in the first uncommented line.\n", current_size, current_line+1, *parameters_size);
@@ -99,6 +97,7 @@ int countCharInString(char* string){
     int sum=0;
 
     char c = string[0];
+
     while(c!='\n' && c!='\0'){
         sum++;
         c=string[sum];
