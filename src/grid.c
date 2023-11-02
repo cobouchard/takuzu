@@ -7,7 +7,6 @@
 
 void grid_allocate(t_grid *g, int size) {
     g->grid = (char **) malloc(size * sizeof(char *));
-
     g->size = size;
     if (g->grid == NULL) {
         warnx("Fail in the allocation of grid in t_grid");
@@ -30,6 +29,9 @@ void grid_allocate(t_grid *g, int size) {
 
 
 void grid_free(const t_grid *g) {
+    if(g==NULL){
+        return;
+    }
     for (int i = 0; i < g->size; ++i) {
         if (g->grid[i] != NULL) {
             free(g->grid[i]);

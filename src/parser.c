@@ -24,33 +24,40 @@ void file_parser(t_grid *grid, char *filename, int* parameters_size) {
         errx(EXIT_FAILURE, "can't open file %s in function file_parser.", filename);
     }
 
-
     char buffer[MAX_BUFFER];
-    char *line;
+
     int current_line = 0;
     int temp_size;
-
+    char* first_line = (char *)malloc(MAX_BUFFER * sizeof(char *));
 
     //let's read the first line, find the size of the grid and allocate the grid to store the data parsed
 
+
     do{
         if (fgets(buffer, MAX_BUFFER, file) != NULL) {
-            line = readLine(buffer, MAX_GRID_SIZE, current_line);
-            temp_size = countCharInString(line);
+            readLine(buffer, MAX_GRID_SIZE, current_line, first_line);
+            temp_size = countCharInString(first_line);
         }
         else{
             errx(EXIT_FAILURE, "File %s is empty !", filename);
         }
     }while(temp_size==0);
 
+    free(first_line);
     temp_size = checkArgGeneratorInt(temp_size);
     current_line++;
 
     if(temp_size==-1){
         errx(EXIT_FAILURE, "Incorrect number of significant characters, grid size must be 4, 8, 16, 32 or 64.\n");
     }
+
+
     *parameters_size=temp_size;
+
     grid_allocate(grid,*parameters_size);
+
+    char *line = (char *)malloc(grid->size * sizeof(char *));
+
     for(int i=0; i!=*parameters_size; i++){
         grid->grid[0][i]=line[i];
     }
@@ -59,9 +66,8 @@ void file_parser(t_grid *grid, char *filename, int* parameters_size) {
 
     while(fgets(buffer, MAX_BUFFER, file) != NULL){
 
-        line = readLine(buffer, *parameters_size, current_line);
+        readLine(buffer, *parameters_size, current_line, line);
         int current_size=countCharInString(line);
-
 
         //there are no significant characters, empty line or commented line
         if(current_size==0) {
@@ -71,20 +77,21 @@ void file_parser(t_grid *grid, char *filename, int* parameters_size) {
 
 
         if(current_size!=*parameters_size){
-            errx(EXIT_FAILURE,"Incorrect number of significant characters '%d' in line '%d'; %d was expected as in the first uncommented line.\n", current_size, current_line, *parameters_size);
+            errx(EXIT_FAILURE,"Incorrect number of significant characters '%d' in line '%d'; %d was expected as in the first uncommented line.\n", current_size, current_line+1, *parameters_size);
         }
 
         for(int i=0; i!=*parameters_size; i++){
             grid->grid[current_line][i]=line[i];
         }
         current_line++;
-
     }
 
     if(current_line!=*parameters_size){
         errx(EXIT_FAILURE, "Incorrect number of lines, %d lines found.", current_line);
     }
 
+
+    free(line);
     fclose(file);
 }
 
@@ -106,12 +113,12 @@ int countCharInString(char* string){
  * @param size size of the grid if known, if not known (first time going in this function, should be size 64 and the size will be determined thanks to the first line
  * @return the corresponding line of the grid (only significant characters)
  */
-char *readLine(char *line, int size, int current_line) {
+void readLine(char *line, int size, int current_line, char *line_to_return) {
 
     char current_char = '\0';
     int current_index = 0;
-    char *line_of_grid = (char *) malloc(size * sizeof(char *));
-    if (line_of_grid == NULL) {
+
+    if (line_to_return == NULL) {
         warnx("Fail in the allocation of line_of_grid in readLine function");
         exit(EXIT_FAILURE);
     }
@@ -128,7 +135,7 @@ char *readLine(char *line, int size, int current_line) {
                     errx(EXIT_FAILURE,"Exceeding 64 significant characters, grid cannot be bigger, exiting.");
                 }
 
-                line_of_grid[current_index] = current_char;
+                line_to_return[current_index] = current_char;
                 current_index++;
             } else{
                 errx(EXIT_FAILURE,
@@ -139,6 +146,5 @@ char *readLine(char *line, int size, int current_line) {
         }
 
     }
-    line_of_grid[current_index]='\n';
-    return line_of_grid;
+
 }

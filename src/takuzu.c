@@ -167,19 +167,19 @@ void end_of_main(char *output) {
     FILE *file;
     file = fopen(output, "w+");
 
-    t_grid *myGrid = (t_grid *) malloc(sizeof(t_grid));
-    grid_allocate(myGrid, parameters.N);
+    t_grid *myGrid = (t_grid *)malloc(sizeof (t_grid));
 
     file_parser(myGrid, parameters.input, &(parameters.N));
-    grid_print(myGrid, file);
+    /*grid_print(myGrid, file);
 
 
     if (!checkConsecutiveCharacters(myGrid))
         printf("HAS CONSECUTIVE CHARACTERS\n");
     else
         printf("DOESN'T HAVE CONSECUTIVE\n");
-
+    */
 
     fclose(file);
     grid_free(myGrid);
+    free(myGrid);
 }
