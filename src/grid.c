@@ -193,3 +193,14 @@ bool isConsistent(t_grid *g){
 bool hasConsecutiveCharacters(int64_t number) {
     return number & (number >> 1) & (number >> 2);
 }
+
+bool is_valid(t_grid *g){
+    for(int i=0; i!=g->size; i++){
+        for(int j=0; j!=g->size; j++){
+            if(g->grid[i][j]=='_'){
+                return false;
+            }
+        }
+    }
+    return isConsistent(g);
+}

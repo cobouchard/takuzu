@@ -30,4 +30,6 @@ bool isConsistent(t_grid *g);
 
 bool hasConsecutiveCharacters(int64_t number);
 
+bool is_valid(t_grid *g);
+
 #endif 
