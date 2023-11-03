@@ -6,6 +6,7 @@
 
 #include "../include/takuzu.h"
 #include "../include/parser.h"
+#include "../include/heuristics.h"
 
 #define DEFAULT_VERBOSE 0
 #define DEFAULT_SOLVER_MODE true
@@ -170,14 +171,16 @@ void end_of_main(char *output) {
     t_grid *myGrid = (t_grid *)malloc(sizeof (t_grid));
 
     file_parser(myGrid, parameters.input, &(parameters.N));
-    grid_print(myGrid, file);
-
 
     if (!isConsistent(myGrid))
         printf("the grid is not consistent\n");
     else
         printf("the grid is consistent\n");
 
+    if(heur_consecutive(myGrid)){
+        printf("Something has changed in the grid.\n");
+    }
+    grid_print(myGrid, file);
 
     fclose(file);
     grid_free(myGrid);
