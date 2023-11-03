@@ -16,6 +16,8 @@ grid.o: grid.c ../include/grid.h
 parser.o: parser.c ../include/parser.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c parser.c
 
+heuristics.o: heuristics.c ../include/heuristics.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c heuristics.c
 clean: 
 	@rm -f *.o takuzu
 
