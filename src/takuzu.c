@@ -173,10 +173,10 @@ void end_of_main(char *output) {
     grid_print(myGrid, file);
 
 
-    if (!checkConsecutiveCharacters(myGrid))
-        printf("HAS CONSECUTIVE CHARACTERS\n");
+    if (!isConsistent(myGrid))
+        printf("the grid is not consistent\n");
     else
-        printf("DOESN'T HAVE CONSECUTIVE\n");
+        printf("the grid is consistent\n");
 
 
     fclose(file);

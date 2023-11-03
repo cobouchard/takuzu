@@ -125,12 +125,14 @@ int64_t columnToInt(t_grid *g, int column, char c) {
     return code;
 }
 
+
+
 /**
  *
  * @param g
- * @return return true if no lines nor columns are identical
+ * @return true if there are no consecutive 0 or 1 AND if no two lines or two columns are equals
  */
-bool checkLinesColumnsDifferent(t_grid *g) {
+bool isConsistent(t_grid *g){
     int64_t linesCodeOnes[g->size];
     int64_t columnsCodeOnes[g->size];
 
@@ -144,53 +146,47 @@ bool checkLinesColumnsDifferent(t_grid *g) {
         columnsCodeZeroes[i] = columnToInt(g, i, '0');
     }
 
-    for (int i = 0; i != g->size; i++) {
-        if ((linesCodeOnes[i] | linesCodeZeroes[i]) != (1 << g->size) - 1) {
-            //there is an underscore, lines are necessarily different
-            continue;
-        }
-        for (int j = i + 1; j != g->size; j++) {
-            if (i != j) {
-                //if the position of zeroes and one is the same in both lines resp columns, the two are equals
-                if (linesCodeOnes[i] == linesCodeOnes[j] && linesCodeZeroes[i] == linesCodeZeroes[j]) {
-                    return false;
-                }
-            }
-        }
-    }
-
-    return true;
-}
-
-/**
- *
- * @param g
- * @return return true is there are no consecutive 0 or consecutive 1
- */
-bool checkConsecutiveCharacters(t_grid *g) {
-    int64_t linesCodeOnes[g->size];
-    int64_t columnsCodeOnes[g->size];
-
-    int64_t linesCodeZeroes[g->size];
-    int64_t columnsCodeZeroes[g->size];
+    //we check that l
+    bool check_column = true;
+    bool check_line = true;
 
     for (int i = 0; i != g->size; i++) {
-        linesCodeOnes[i] = lineToInt(g, i, '1');
-        columnsCodeOnes[i] = columnToInt(g, i, '1');
-        linesCodeZeroes[i] = lineToInt(g, i, '0');
-        columnsCodeZeroes[i] = columnToInt(g, i, '0');
-    }
-
-
-    for (int i = 0; i != g->size; i++) {
-        //check that there are no 3 consecutive 0 or 1 in lines and columns
+        //checking that there are no consecutive characters
         if (hasConsecutiveCharacters(linesCodeZeroes[i]) || hasConsecutiveCharacters(linesCodeOnes[i]) ||
             hasConsecutiveCharacters(columnsCodeZeroes[i]) || hasConsecutiveCharacters(columnsCodeOnes[i])) {
             return false;
         }
-    }
 
-    return true;
+        //checking that lines and columns are different
+        if ((linesCodeOnes[i] | linesCodeZeroes[i]) != (1 << g->size) - 1) {
+            //there is an underscore, lines are necessarily different
+            check_line=false;
+        }
+        if ((columnsCodeOnes[i] | columnsCodeZeroes[i]) != (1 << g->size) - 1) {
+            //there is an underscore, columns are necessarily different
+            check_column=false;
+        }
+
+
+        for (int j = i + 1; j != g->size; j++) {
+            if (i != j) {
+                //if the position of zeroes and one is the same in both lines resp columns, the two are equals
+                if(check_line){
+                    if (linesCodeOnes[i] == linesCodeOnes[j] && linesCodeZeroes[i] == linesCodeZeroes[j]) {
+                        return false;
+                    }
+                }
+                if(check_column){
+                    if (columnsCodeOnes[i] == columnsCodeOnes[j] && columnsCodeZeroes[i] == columnsCodeZeroes[j]) {
+                        return false;
+                    }
+                }
+
+            }
+        }
+        check_column=true;
+        check_line=true;
+    }
 }
 
 

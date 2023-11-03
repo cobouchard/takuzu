@@ -26,9 +26,7 @@ int64_t lineToInt(t_grid *g, int line, char c);
 
 int64_t columnToInt(t_grid *g, int column, char c);
 
-bool checkLinesColumnsDifferent(t_grid *g);
-
-bool checkConsecutiveCharacters(t_grid *g);
+bool isConsistent(t_grid *g);
 
 bool hasConsecutiveCharacters(int64_t number);
 
