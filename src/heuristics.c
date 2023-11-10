@@ -7,76 +7,40 @@
  * @return return true if the grid has been changed, false otherwise
  */
 bool heur_consecutive(t_grid *g){
-    char current_char='_';
-    bool change = false; //#TODO currently check only from left to right, meaning that if the size-2 character is empty and the next two are the same, it won't be updated
-    for(int i=0; i!=g->size-2; i++){
-        for(int j=0; j!=g->size-2; j++){
-            if(g->grid[i][j]==current_char){
-                //we update the cells on the left and right, (one on the right and two on the left)
+    bool change = false;
 
-            }
+    int64_t linesCodeOnes[g->size];
+    int64_t columnsCodeOnes[g->size];
 
-            current_char=g->grid[i][j];
-            //the current implementation is probably not that smart
-            //on the column (for a given line), if there are two consecutive 0 (resp 1), we might update next character to 1 (resp 0)
+    int64_t linesCodeZeroes[g->size];
+    int64_t columnsCodeZeroes[g->size];
 
-            //from left to right (check 2 cells and update the one on the right)
-            if(g->grid[i][j]=='0' && g->grid[i][j+1]=='0'){
-                if(g->grid[i][j+2]=='_'){
-                    g->grid[i][j+2]='1';
-                    change=true;
-                }
-            }
-            if(g->grid[i][j]=='1' && g->grid[i][j+1]=='1'){
-                if(g->grid[i][j+2]=='_'){
-                    g->grid[i][j+2]='0';
-                    change=true;
-                }
-            }
+    for (int i = 0; i != g->size; i++) {
+        linesCodeOnes[i] = lineToInt(g, i, '1');
+        columnsCodeOnes[i] = columnToInt(g, i, '1');
+        linesCodeZeroes[i] = lineToInt(g, i, '0');
+        columnsCodeZeroes[i] = columnToInt(g, i, '0');
+    }
 
-            //We do the same for lines
-            if(g->grid[i][j]=='0' && g->grid[i+1][j]=='0'){
-                if(g->grid[i+2][j]=='_'){
-                    g->grid[i+2][j]='1';
-                    change=true;
-                }
-            }
-            if(g->grid[i][j]=='1' && g->grid[i+1][j]=='1'){
-                if(g->grid[i+2][j]=='_'){
-                    g->grid[i+2][j]='0';
-                    change=true;
-                }
-            }
+    // one full go through to make the lines/columnsCode array (O(n²))
+    // then we go through the arrays (O(n))
 
-            //from right to left (check 2 cells and update the one on the left)
-            //for columns
-            if(g->grid[g->size-i-1][g->size-j-1]=='0' && g->grid[g->size-i-1][g->size-j-2]=='0'){
-                if(g->grid[g->size-i-1][g->size-j-3]=='_'){
-                    g->grid[g->size-i-1][g->size-j-3]='1';
-                    change=true;
-                }
-            }
-            if(g->grid[g->size-i-1][g->size-j-1]=='1' && g->grid[g->size-i-1][g->size-j-2]=='1'){
-                if(g->grid[g->size-i-1][g->size-j-3]=='_'){
-                    g->grid[g->size-i-1][g->size-j-3]='0';
-                    change=true;
-                }
-            }
+    for(int i=0; i!=g->size; i++){
+        for(int j=0; j!=g->size; j++){
 
-            //for lines
-            printf("%c is here (%d,%d) and %c %c \n", g->grid[g->size-i-1][g->size-j-1],g->size-i-1,g->size-j-1,g->grid[g->size-i-2][g->size-j-1],g->grid[g->size-i-3][g->size-j-1]);
-            if(g->grid[g->size-i-1][g->size-j-1]=='0' && g->grid[g->size-i-2][g->size-j-1]=='0'){
-                if(g->grid[g->size-i-3][g->size-j-1]=='_'){
-                    g->grid[g->size-i-3][g->size-j-1]='1';
-                    change=true;
-                }
-            }
-            if(g->grid[g->size-i-1][g->size-j-1]=='1' && g->grid[g->size-i-2][g->size-j-1]=='1'){
-                if(g->grid[g->size-i-3][g->size-j-1]=='_'){
-                    g->grid[g->size-i-3][g->size-j-1]='0';
-                    change=true;
-                }
-            }
+            //(position1 & position1>>1) >> 1 should be the list of possibles positions on the right
+            //(position1 & position1>>1) << 2 should be the list of possible positions on the left
+
+            //try to get possible positions of new 1 and 0
+            //use the method to check 2 consecutive char
+            //test the different positions if there is an underscore
+            //and with underscore positions and 1  (resp 0) positions
+
+
+            //once we have the final binary result, we go through it by bit shifting to the right, we get the position by incrementing i every time
+            //be careful to only bitshift for grid size times(or perhaps grid size -1), so we don't go above the array
+
+            //since we do it for line and columns, 1 and 0, left and right, we end up having 8 integers each time
         }
 
     }
