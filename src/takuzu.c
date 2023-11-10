@@ -6,6 +6,7 @@
 
 #include "../include/takuzu.h"
 #include "../include/parser.h"
+#include "../include/heuristics.h"
 
 
 static struct Params parameters;
@@ -164,16 +165,19 @@ void end_of_main(char *output) {
     t_grid *myGrid = (t_grid *) malloc(sizeof(t_grid));
 
     file_parser(myGrid, parameters.input, &(parameters.N));
+
     t_grid *copy = (t_grid *) malloc(sizeof(t_grid));
     grid_copy(myGrid, copy);
     grid_print(copy, file);
-
 
     if (!is_valid(myGrid))
         printf("the grid is not valid\n");
     else
         printf("the grid is valid\n");
 
+    if(heur_consecutive(myGrid)){
+        printf("Something has changed in the grid.\n");
+    }
 
     fclose(file);
     grid_free(myGrid);
