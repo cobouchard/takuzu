@@ -72,6 +72,7 @@ void grid_copy(t_grid *grid_to_copy, t_grid *grid_result) {
             grid_result->grid[i][j] = grid_to_copy->grid[i][j];
         }
     }
+    //#TODO use memcopy
 }
 
 void set_cell(int i, int j, t_grid *g, char c) {
@@ -103,7 +104,7 @@ int64_t lineToInt(t_grid *g, int line, char c) {
         char temp = g->grid[line][column];
 
         if (temp == c) {
-            code = code | (1 << column);
+            code = code | (1 << column); //#TODO Use macro set bit
         }
     }
 
@@ -117,7 +118,7 @@ int64_t columnToInt(t_grid *g, int column, char c) {
     for (int line = 0; line != g->size; line++) {
         char temp = g->grid[line][column];
         if (temp == c) {
-            code = code | (1 << line);
+            code = code | (1 << line); //#TODO same thing
         }
 
     }
@@ -146,7 +147,6 @@ bool isConsistent(t_grid *g){
         columnsCodeZeroes[i] = columnToInt(g, i, '0');
     }
 
-    //we check that l
     bool check_column = true;
     bool check_line = true;
 
@@ -158,21 +158,22 @@ bool isConsistent(t_grid *g){
         }
 
         //checking that lines and columns are different
-        if ((linesCodeOnes[i] | linesCodeZeroes[i]) != (1 << g->size) - 1) {
+        if ((linesCodeOnes[i] | linesCodeZeroes[i]) != (1 << g->size) - 1) { //#TODO macro for bit manipulation (and one macro for checking the whole thing
             //there is an underscore, lines are necessarily different
             check_line=false;
         }
-        if ((columnsCodeOnes[i] | columnsCodeZeroes[i]) != (1 << g->size) - 1) {
+        if ((columnsCodeOnes[i] | columnsCodeZeroes[i]) != (1 << g->size) - 1) { //#TODO same
             //there is an underscore, columns are necessarily different
             check_column=false;
         }
 
 
         for (int j = i + 1; j != g->size; j++) {
-            if (i != j) {
+            if (i != j) { //#TODO useless
                 //if the position of zeroes and one is the same in both lines resp columns, the two are equals
                 if(check_line){
                     if (linesCodeOnes[i] == linesCodeOnes[j] && linesCodeZeroes[i] == linesCodeZeroes[j]) {
+
                         return false;
                     }
                 }
@@ -187,6 +188,8 @@ bool isConsistent(t_grid *g){
         check_column=true;
         check_line=true;
     }
+
+    return true;
 }
 
 

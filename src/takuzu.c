@@ -173,10 +173,10 @@ void end_of_main(char *output) {
     grid_print(myGrid, file);
 
 
-    if (!isConsistent(myGrid))
-        printf("the grid is not consistent\n");
+    if (!is_valid(myGrid))
+        printf("the grid is not valid\n");
     else
-        printf("the grid is consistent\n");
+        printf("the grid is valid\n");
 
 
     fclose(file);
