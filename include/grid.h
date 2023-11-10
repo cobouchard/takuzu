@@ -5,6 +5,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define set_bit(number, place) number = number | (1<<place)
+#define mask_nbits(size) (1 << size) - 1
+#define different(a, b) (a | b) != mask_nbits(g->size)
+
 typedef struct {
     int size;
     char **grid;
@@ -27,6 +31,8 @@ int64_t lineToInt(t_grid *g, int line, char c);
 int64_t columnToInt(t_grid *g, int column, char c);
 
 bool isConsistent(t_grid *g);
+
+int countBits(int64_t n);
 
 bool hasConsecutiveCharacters(int64_t number);
 

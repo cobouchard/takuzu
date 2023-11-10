@@ -7,12 +7,6 @@
 #include "../include/takuzu.h"
 #include "../include/parser.h"
 
-#define DEFAULT_VERBOSE 0
-#define DEFAULT_SOLVER_MODE true
-#define DEFAULT_ALL false
-#define DEFAULT_N 8
-#define DEFAULT_UNIQUE false
-
 
 static struct Params parameters;
 
@@ -34,7 +28,7 @@ int main(int argc, char *argv[]) {
                     {"unique",   no_argument,       0, 'u'},
                     {"verbose",  no_argument,       0, 'v'},
                     {"help",     no_argument,       0, 'h'},
-                    {0,          0,                 0, 0}
+                    {0, 0,                          0, 0}
             };
 
     int c;
@@ -167,10 +161,12 @@ void end_of_main(char *output) {
     FILE *file;
     file = fopen(output, "w+");
 
-    t_grid *myGrid = (t_grid *)malloc(sizeof (t_grid));
+    t_grid *myGrid = (t_grid *) malloc(sizeof(t_grid));
 
     file_parser(myGrid, parameters.input, &(parameters.N));
-    grid_print(myGrid, file);
+    t_grid *copy = (t_grid *) malloc(sizeof(t_grid));
+    grid_copy(myGrid, copy);
+    grid_print(copy, file);
 
 
     if (!is_valid(myGrid))
@@ -181,5 +177,7 @@ void end_of_main(char *output) {
 
     fclose(file);
     grid_free(myGrid);
+    grid_free(copy);
+    free(copy);
     free(myGrid);
 }

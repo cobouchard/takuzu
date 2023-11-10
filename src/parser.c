@@ -5,9 +5,6 @@
 #include "../include/parser.h"
 #include "../include/takuzu.h"
 
-#define MAX_BUFFER 256
-#define MAX_GRID_SIZE 64
-
 
 bool check_char(const char c) {
     return c == '0' || c == '1' || c == '_';

@@ -67,12 +67,12 @@ void grid_copy(t_grid *grid_to_copy, t_grid *grid_result) {
     }
     grid_allocate(grid_result, grid_to_copy->size);
 
+
     for (int i = 0; i != grid_to_copy->size; i++) {
         for (int j = 0; j != grid_to_copy->size; j++) {
             grid_result->grid[i][j] = grid_to_copy->grid[i][j];
         }
     }
-    //#TODO use memcopy
 }
 
 void set_cell(int i, int j, t_grid *g, char c) {
@@ -104,7 +104,7 @@ int64_t lineToInt(t_grid *g, int line, char c) {
         char temp = g->grid[line][column];
 
         if (temp == c) {
-            code = code | (1 << column); //#TODO Use macro set bit
+            set_bit(code, column);
         }
     }
 
@@ -118,7 +118,7 @@ int64_t columnToInt(t_grid *g, int column, char c) {
     for (int line = 0; line != g->size; line++) {
         char temp = g->grid[line][column];
         if (temp == c) {
-            code = code | (1 << line); //#TODO same thing
+            set_bit(code, line);
         }
 
     }
@@ -133,7 +133,7 @@ int64_t columnToInt(t_grid *g, int column, char c) {
  * @param g
  * @return true if there are no consecutive 0 or 1 AND if no two lines or two columns are equals
  */
-bool isConsistent(t_grid *g){
+bool isConsistent(t_grid *g) {
     int64_t linesCodeOnes[g->size];
     int64_t columnsCodeOnes[g->size];
 
@@ -158,35 +158,39 @@ bool isConsistent(t_grid *g){
         }
 
         //checking that lines and columns are different
-        if ((linesCodeOnes[i] | linesCodeZeroes[i]) != (1 << g->size) - 1) { //#TODO macro for bit manipulation (and one macro for checking the whole thing
+        if (different(linesCodeZeroes[i], linesCodeOnes[i])) {
             //there is an underscore, lines are necessarily different
-            check_line=false;
+            check_line = false;
         }
-        if ((columnsCodeOnes[i] | columnsCodeZeroes[i]) != (1 << g->size) - 1) { //#TODO same
+        if (different(columnsCodeZeroes[i], columnsCodeOnes[i])) {
             //there is an underscore, columns are necessarily different
-            check_column=false;
+            check_column = false;
         }
 
 
         for (int j = i + 1; j != g->size; j++) {
-            if (i != j) { //#TODO useless
-                //if the position of zeroes and one is the same in both lines resp columns, the two are equals
-                if(check_line){
-                    if (linesCodeOnes[i] == linesCodeOnes[j] && linesCodeZeroes[i] == linesCodeZeroes[j]) {
-
-                        return false;
-                    }
+            //if the position of zeroes and one is the same in both lines resp columns, the two are equals
+            if (check_line) {
+                if (linesCodeOnes[i] == linesCodeOnes[j] && linesCodeZeroes[i] == linesCodeZeroes[j]) {
+                    return false;
                 }
-                if(check_column){
-                    if (columnsCodeOnes[i] == columnsCodeOnes[j] && columnsCodeZeroes[i] == columnsCodeZeroes[j]) {
-                        return false;
-                    }
-                }
-
             }
+            if (check_column) {
+                if (columnsCodeOnes[i] == columnsCodeOnes[j] && columnsCodeZeroes[i] == columnsCodeZeroes[j]) {
+                    return false;
+                }
+            }
+
         }
-        check_column=true;
-        check_line=true;
+        //we check that there are not more than grid_size/2 of the same character in a line or column
+        if (countBits(columnsCodeOnes[i]) > g->size / 2 ||
+            countBits(columnsCodeOnes[i]) > g->size / 2 ||
+            countBits(linesCodeZeroes[i]) > g->size / 2 ||
+            countBits(linesCodeZeroes[i]) > g->size / 2) {
+            return false;
+        }
+        check_column = true;
+        check_line = true;
     }
 
     return true;
@@ -197,10 +201,19 @@ bool hasConsecutiveCharacters(int64_t number) {
     return number & (number >> 1) & (number >> 2);
 }
 
-bool is_valid(t_grid *g){
-    for(int i=0; i!=g->size; i++){
-        for(int j=0; j!=g->size; j++){
-            if(g->grid[i][j]=='_'){
+int countBits(int64_t n) {
+    int count = 0;
+    while (n) {
+        count++;
+        n &= (n - 1);
+    }
+    return count;
+}
+
+bool is_valid(t_grid *g) {
+    for (int i = 0; i != g->size; i++) {
+        for (int j = 0; j != g->size; j++) {
+            if (g->grid[i][j] == '_') {
                 return false;
             }
         }
