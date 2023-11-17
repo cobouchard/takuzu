@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include "../include/grid.h"
+#include "../include/heuristics.h"
 
 /**
  * when 2 consecutive characters are found (1 or 0) the next character is set to the opposite (if it was not filled)
@@ -8,41 +9,44 @@
  */
 bool heur_consecutive(t_grid *g){
     bool change = false;
+    char current_char = '_';
 
-    int64_t linesCodeOnes[g->size];
-    int64_t columnsCodeOnes[g->size];
+    for(int i=0; i!=g->size-1; i++){
+        for(int j=0; j!=g->size-1; j++){
+            current_char=g->grid[i][j];
+            if(current_char=='_'){
+                continue;
+            }
+            if(g->grid[i][j+1]==current_char){
+                if(check_coord(i,j-1,g->size)){
+                    if(check_empty(i,j-1,g)){
+                        change=true;
+                        set_cell(i,j-1,g, other_char(current_char));
+                    }
+                }
+                if(check_coord(i,j+2,g->size)){
+                    if(check_empty(i,j+2,g)){
+                        change=true;
+                        set_cell(i,j+2,g,other_char(current_char));
+                    }
+                }
+            }
 
-    int64_t linesCodeZeroes[g->size];
-    int64_t columnsCodeZeroes[g->size];
-
-    for (int i = 0; i != g->size; i++) {
-        linesCodeOnes[i] = lineToInt(g, i, '1');
-        columnsCodeOnes[i] = columnToInt(g, i, '1');
-        linesCodeZeroes[i] = lineToInt(g, i, '0');
-        columnsCodeZeroes[i] = columnToInt(g, i, '0');
-    }
-
-    // one full go through to make the lines/columnsCode array (O(n²))
-    // then we go through the arrays (O(n))
-
-    for(int i=0; i!=g->size; i++){
-        for(int j=0; j!=g->size; j++){
-
-            //(position1 & position1>>1) >> 1 should be the list of possibles positions on the right
-            //(position1 & position1>>1) << 2 should be the list of possible positions on the left
-
-            //try to get possible positions of new 1 and 0
-            //use the method to check 2 consecutive char
-            //test the different positions if there is an underscore
-            //and with underscore positions and 1  (resp 0) positions
-
-
-            //once we have the final binary result, we go through it by bit shifting to the right, we get the position by incrementing i every time
-            //be careful to only bitshift for grid size times(or perhaps grid size -1), so we don't go above the array
-
-            //since we do it for line and columns, 1 and 0, left and right, we end up having 8 integers each time
+            if(g->grid[i+1][j]==current_char){
+                if(check_coord(i-1,j,g->size)){
+                    if(check_empty(i-1,j,g)){
+                        change=true;
+                        set_cell(i-1,j,g,other_char(current_char));
+                    }
+                }
+                if(check_coord(i+2,j,g->size)){
+                    if(check_empty(i+2,j,g)){
+                        change=true;
+                        set_cell(i+2,j,g,other_char(current_char));
+                    }
+                }
+            }
         }
-
     }
 
 
@@ -50,5 +54,21 @@ bool heur_consecutive(t_grid *g){
 }
 
 bool heur_fill(t_grid *g){
-    return false;
+    int count_1_line=0, count_0_line=0, count_1_column=0, count_0_column=0;
+    bool change=false;
+    for(int i=0; i!=g->size; i++){
+        count_0_column=0; count_0_line=0; count_1_column=0; count_1_line=0;
+        for(int j=0; j!=g->size; j++){
+            count_1_line += (g->grid[i][j]=='1') ? 1 : 0;
+            count_0_line += (g->grid[i][j]=='0') ? 1 : 0;
+            count_1_column += (g->grid[j][i]=='1') ? 1 : 0;
+            count_0_column += (g->grid[j][i]=='0') ? 1 : 0;
+        }
+        change |= fill_column(i,g,'1',count_0_column);
+        change |= fill_column(i,g,'0',count_1_column);
+        change |= fill_line(i,g,'1',count_0_line);
+        change |= fill_line(i,g,'0',count_1_line);
+    }
+
+    return change;
 }

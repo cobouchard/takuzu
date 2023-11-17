@@ -55,6 +55,9 @@ void file_parser(t_grid *grid, char *filename, int *parameters_size) {
     //we will now check that the next lines are the same size as the first one and finish the parsing of the file
     char *line = (char *) calloc(grid->size, sizeof(char));
     while (fgets(buffer, MAX_BUFFER, file) != NULL) {
+        if(buffer[0]=='#'){
+            continue;
+        }
         readLine(buffer, *parameters_size, current_line, line);
         int current_size = countCharInString(line);
 
@@ -116,7 +119,7 @@ void readLine(char *line, int size, int current_line, char *line_to_return) {
         current_char = line[i];
         if (current_char != '\n') {
             if (current_char == '#') {
-                current_char = '\n';
+                return;
             } else if (check_separator(current_char)) {
                 continue;
             } else if (check_char(current_char)) {

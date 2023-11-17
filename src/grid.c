@@ -76,18 +76,18 @@ void grid_copy(t_grid *grid_to_copy, t_grid *grid_result) {
 }
 
 void set_cell(int i, int j, t_grid *g, char c) {
-    if (g == NULL) {
-        errx(EXIT_FAILURE, "trying to setting a cell on an unallocated grid");
+    if(i>=g->size || j>=g->size || j<0 || i<0){
+        return;
     }
 
     g->grid[i][j] = c;
 }
 
-char get_cell(int i, int j, t_grid *g) {
-    if (g == NULL) {
-        errx(EXIT_FAILURE, "trying to get a cell from an unallocated grid");
-    }
+bool check_coords(int i, int j, int size){
+    return i<0 || j<0 || i>=size || j>=size;
+}
 
+char get_cell(int i, int j, t_grid *g) {
     return g->grid[i][j];
 }
 
@@ -219,4 +219,37 @@ bool is_valid(t_grid *g) {
         }
     }
     return isConsistent(g);
+}
+
+bool fill_column(int column, t_grid *g, char c, int count){
+    bool change=false;
+
+    if(count<g->size/2){
+        return change;
+    }
+
+    for(int i=0; i!=g->size;i++){
+        if(g->grid[i][column]=='_'){
+            g->grid[i][column]=c;
+            change=true;
+        }
+    }
+
+    return change;
+}
+
+bool fill_line(int line, t_grid *g, char c, int count){
+    bool change=false;
+
+    if(count<g->size/2){
+        return change;
+    }
+    for(int i=0; i!=g->size;i++){
+        if(g->grid[line][i]=='_'){
+            g->grid[line][i]=c;
+            change=true;
+        }
+    }
+
+    return change;
 }

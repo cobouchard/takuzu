@@ -166,22 +166,18 @@ void end_of_main(char *output) {
 
     file_parser(myGrid, parameters.input, &(parameters.N));
 
-    t_grid *copy = (t_grid *) malloc(sizeof(t_grid));
-    grid_copy(myGrid, copy);
-    grid_print(copy, file);
 
     if (!is_valid(myGrid))
         printf("the grid is not valid\n");
     else
         printf("the grid is valid\n");
 
-    if(heur_consecutive(myGrid)){
+    while(heur_fill(myGrid) || heur_consecutive(myGrid)){
         printf("Something has changed in the grid.\n");
     }
+    grid_print(myGrid, file);
 
     fclose(file);
     grid_free(myGrid);
-    grid_free(copy);
-    free(copy);
     free(myGrid);
 }

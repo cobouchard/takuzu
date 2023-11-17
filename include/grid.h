@@ -38,4 +38,8 @@ bool hasConsecutiveCharacters(int64_t number);
 
 bool is_valid(t_grid *g);
 
+bool fill_column(int column, t_grid *g, char c, int count);
+
+bool fill_line(int line, t_grid *g, char c, int count);
+
 #endif 
