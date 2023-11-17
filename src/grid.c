@@ -2,6 +2,7 @@
 #include <err.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <time.h>
 #include "../include/grid.h"
 
 
@@ -252,4 +253,32 @@ bool fill_line(int line, t_grid *g, char c, int count){
     }
 
     return change;
+}
+
+void generate_grid(int size, t_grid *g){
+    if(g==NULL){
+        errx(EXIT_FAILURE, "trying to generate a grid on an empty pointer\n");
+    }
+
+    grid_allocate(g,size);
+    int set_number = percentage*size*size/100;
+    srand(time(NULL));
+    int i = rand()%size, j = rand()%size;
+
+    while(set_number!=0){
+        while(g->grid[i][j]!='_'){
+            i = rand()%size;
+            j = rand()%size;
+        }
+        g->grid[i][j] = rand()%2==1 ? '0' : '1';
+
+
+        if(!isConsistent(g)){
+            g->grid[i][j]='_';
+        }
+        else{
+            set_number--;
+        }
+    }
+
 }

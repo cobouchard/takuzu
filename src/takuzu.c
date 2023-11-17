@@ -175,7 +175,9 @@ void end_of_main(char *output) {
     while(heur_fill(myGrid) || heur_consecutive(myGrid)){
         printf("Something has changed in the grid.\n");
     }
-    grid_print(myGrid, file);
+    t_grid *generated = (t_grid *) malloc(sizeof(t_grid));
+    generate_grid(4,generated);
+    grid_print(generated, file);
 
     fclose(file);
     grid_free(myGrid);

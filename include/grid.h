@@ -9,6 +9,8 @@
 #define mask_nbits(size) (1 << size) - 1
 #define different(a, b) (a | b) != mask_nbits(g->size)
 
+#define percentage 40
+
 typedef struct {
     int size;
     char **grid;
@@ -41,5 +43,7 @@ bool is_valid(t_grid *g);
 bool fill_column(int column, t_grid *g, char c, int count);
 
 bool fill_line(int line, t_grid *g, char c, int count);
+
+void generate_grid(int size, t_grid *g);
 
 #endif 
