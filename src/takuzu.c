@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <dirent.h>
+#include <string.h>
 #include <stdbool.h>
 #include <getopt.h>
 #include <err.h>
@@ -29,14 +31,18 @@ int main(int argc, char *argv[]) {
                     {"unique",   no_argument,       0, 'u'},
                     {"verbose",  no_argument,       0, 'v'},
                     {"help",     no_argument,       0, 'h'},
+                    {"test",     no_argument,       0, 't'},
                     {0, 0,                          0, 0}
             };
 
     int c;
     int option_index = 0;
     do {
-        c = getopt_long(argc, argv, "auvhg::o:", long_options, &option_index);
+        c = getopt_long(argc, argv, "tauvhg::o:", long_options, &option_index);
         switch (c) {
+            case 't':
+                testing_grids();
+                exit(EXIT_SUCCESS);
             case 'h':
                 print_help();
                 exit(EXIT_SUCCESS);
@@ -157,6 +163,43 @@ int checkArgGeneratorInt(int N) {
     return -1;
 }
 
+bool is_txt_file(const char *filename) {
+    const char *dot = strrchr(filename, '.');
+    return dot && !strcmp(dot, ".txt");
+}
+
+void testing_grids(){
+    DIR *dir;
+    struct dirent *entry;
+
+    dir = opendir("./tests");
+
+    if (dir == NULL) {
+        errx(EXIT_FAILURE,"Cannot open tests folder in testing_grids function\n");
+    }
+
+    while ((entry = readdir(dir)) != NULL) {
+        if (is_txt_file(entry->d_name)) {
+            //we open every grid one by one, check if they are consistent, and if they are, check if we can solve them
+            t_grid *myGrid = (t_grid *) malloc(sizeof(t_grid));
+            file_parser(myGrid, parameters.input, &(parameters.N));
+
+            bool consistent = isConsistent(myGrid);
+            if(consistent){
+                while(heur_consecutive(myGrid) || heur_fill(myGrid));
+
+            }
+            else{
+                printf("The grid %s is not consistent\n", entry->d_name);
+            }
+
+        }
+    }
+
+    free(entry);
+    closedir(dir);
+}
+
 
 void end_of_main(char *output) {
     FILE *file;
@@ -183,3 +226,4 @@ void end_of_main(char *output) {
     grid_free(myGrid);
     free(myGrid);
 }
+
