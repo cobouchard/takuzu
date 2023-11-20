@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <err.h>
+#include <string.h>
 
 #include "../include/parser.h"
 #include "../include/takuzu.h"
@@ -55,12 +56,9 @@ void file_parser(t_grid *grid, char *filename, int *parameters_size) {
     //we will now check that the next lines are the same size as the first one and finish the parsing of the file
     char *line = (char *) calloc(grid->size, sizeof(char));
     while (fgets(buffer, MAX_BUFFER, file) != NULL) {
-        if(buffer[0]=='#'){
-            continue;
-        }
         readLine(buffer, *parameters_size, current_line, line);
-        int current_size = countCharInString(line);
 
+        int current_size = countCharInString(line);
         //there are no significant characters, empty line or commented line
         if (current_size == 0) {
             //we go to the next line
@@ -106,9 +104,9 @@ int countCharInString(char *string) {
  * @return the corresponding line of the grid (only significant characters)
  */
 void readLine(char *line, int size, int current_line, char *line_to_return) {
-
     char current_char = '\0';
     int current_index = 0;
+    memset(line_to_return, 0, size);
 
     if (line_to_return == NULL) {
         warnx("Fail in the allocation of line_of_grid in readLine function");

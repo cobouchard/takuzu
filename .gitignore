@@ -1,5 +1,5 @@
 *.o
-*.txt
+/*.txt
 .idea
 takuzu
 src/takuzu
