@@ -209,6 +209,7 @@ bool isConsistent(t_grid *g) {
 
 
 bool hasConsecutiveCharacters(int64_t number) {
+    //here we cast the number to an unsigned int, because for size 64, problems occured because of the bit sign
     uint64_t u_number = (uint64_t)number;
     return u_number & (u_number >> 1) & (u_number >> 2);
 }
@@ -288,6 +289,7 @@ void generate_grid(int size, t_grid *g){
         }
 
         if(!isConsistent(g)){
+            //if we can't set a 0 or a 1 to this empty space, the grid will never have a solution, we start again from the start
             grid_free(g);
             generate_grid(size,g);
         }

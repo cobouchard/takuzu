@@ -31,18 +31,14 @@ int main(int argc, char *argv[]) {
                     {"unique",   no_argument,       0, 'u'},
                     {"verbose",  no_argument,       0, 'v'},
                     {"help",     no_argument,       0, 'h'},
-                    {"test",     no_argument,       0, 't'},
                     {0, 0,                          0, 0}
             };
 
     int c;
     int option_index = 0;
     do {
-        c = getopt_long(argc, argv, "tauvhg::o:", long_options, &option_index);
+        c = getopt_long(argc, argv, "auvhg::o:", long_options, &option_index);
         switch (c) {
-            case 't':
-                testing_grids();
-                exit(EXIT_SUCCESS);
             case 'h':
                 print_help();
                 exit(EXIT_SUCCESS);
@@ -107,21 +103,42 @@ int main(int argc, char *argv[]) {
         }
 
 
-        FILE *file;
-        file = fopen(input, "r");
-        if (file == NULL) {
+        FILE *input_file;
+        FILE *output_file;
+
+        input_file = fopen(input, "r");
+        if (input_file == NULL) {
             errx(EXIT_FAILURE, "the file %s doesn't exist", input);
         }
 
-        fclose(file);
         printf("opening the grid from \"%s\" file\n", input);
-        parameters.input = input;
+        t_grid *grid = (t_grid *) malloc(sizeof(t_grid));
+        file_parser(grid,input_file,&parameters.N);
 
         if (parameters.output == NULL) {
-            end_of_main("grid_sortie.txt");
+            output_file=stdout;
         } else {
-            end_of_main(parameters.output);
+            output_file = fopen(parameters.output, "w+");
+            if(output_file==NULL){
+                errx(EXIT_FAILURE,"Couldn't open output file %s\n",parameters.output);
+            }
         }
+
+        solve(grid);
+        if(is_valid(grid)){
+            printf("The grid has been solved !\n");
+        }
+        else{
+            printf("The grid hasn't been solved entirely.\n");
+        }
+        grid_print(grid,output_file);
+        grid_free(grid);
+        free(grid);
+        fclose(input_file);
+        if(output_file!=stdout){
+            fclose(output_file);
+        }
+
     } else if (argv[optind] != NULL) {
         errx(EXIT_FAILURE, "too many arguments for generator mode, no file needed");
     }
@@ -129,7 +146,18 @@ int main(int argc, char *argv[]) {
         t_grid *generated = (t_grid *) malloc(sizeof(t_grid));
         grid_allocate(generated,parameters.N);
         generate_grid(parameters.N,generated);
-        grid_print(generated,stdout);
+        if(parameters.output==NULL){
+            grid_print(generated,stdout);
+        }
+        else{
+            FILE *file;
+            file = fopen(parameters.output, "w+");
+            if(file==NULL){
+                errx(EXIT_FAILURE, "Couldn't open file %s to write the output of generator\n",parameters.output);
+            }
+            grid_print(generated,file);
+        }
+
         grid_free(generated);
         free(generated);
     }
@@ -171,67 +199,6 @@ int checkArgGeneratorInt(int N) {
     return -1;
 }
 
-bool is_txt_file(const char *filename) {
-    const char *dot = strrchr(filename, '.');
-    return dot && !strcmp(dot, ".txt");
-}
-
-void testing_grids(){
-    DIR *dir;
-    struct dirent *entry;
-
-    dir = opendir("./tests");
-
-    if (dir == NULL) {
-        errx(EXIT_FAILURE,"Cannot open tests folder in testing_grids function\n");
-    }
-
-    while ((entry = readdir(dir)) != NULL) {
-        if (is_txt_file(entry->d_name)) {
-            //we open every grid one by one, check if they are consistent, and if they are, check if we can solve them
-            t_grid *myGrid = (t_grid *) malloc(sizeof(t_grid));
-            file_parser(myGrid, parameters.input, &(parameters.N));
-
-            bool consistent = isConsistent(myGrid);
-            if(consistent){
-                while(heur_consecutive(myGrid) || heur_fill(myGrid));
-
-            }
-            else{
-                printf("The grid %s is not consistent\n", entry->d_name);
-            }
-
-        }
-    }
-
-    free(entry);
-    closedir(dir);
-}
 
 
-void end_of_main(char *output) {
-    FILE *file;
-    file = fopen(output, "w+");
-
-    t_grid *myGrid = (t_grid *) malloc(sizeof(t_grid));
-
-    file_parser(myGrid, parameters.input, &(parameters.N));
-
-
-    if (!is_valid(myGrid))
-        printf("the grid is not valid\n");
-    else
-        printf("the grid is valid\n");
-
-    while(heur_fill(myGrid) || heur_consecutive(myGrid)){
-        printf("Something has changed in the grid.\n");
-    }
-    t_grid *generated = (t_grid *) malloc(sizeof(t_grid));
-    generate_grid(4,generated);
-    grid_print(generated, file);
-
-    fclose(file);
-    grid_free(myGrid);
-    free(myGrid);
-}
 

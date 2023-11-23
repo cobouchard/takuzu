@@ -15,13 +15,7 @@ bool check_separator(const char c) {
     return c == '\t' || c == ' ';
 }
 
-void file_parser(t_grid *grid, char *filename, int *parameters_size) {
-    FILE *file;
-    file = fopen(filename, "r");
-    if (file == NULL) {
-        errx(EXIT_FAILURE, "can't open file %s in function file_parser.", filename);
-    }
-
+void file_parser(t_grid *grid, FILE *file, int *parameters_size) {
     char buffer[MAX_BUFFER];
 
     int current_line = 0;
@@ -35,7 +29,7 @@ void file_parser(t_grid *grid, char *filename, int *parameters_size) {
             readLine(buffer, MAX_GRID_SIZE, current_line, first_line);
             temp_size = countCharInString(first_line);
         } else {
-            errx(EXIT_FAILURE, "File %s is empty !", filename);
+            errx(EXIT_FAILURE, "File is empty !");
         }
     } while (temp_size == 0);
 
@@ -82,7 +76,6 @@ void file_parser(t_grid *grid, char *filename, int *parameters_size) {
     }
 
     free(line);
-    fclose(file);
 }
 
 int countCharInString(char *string) {

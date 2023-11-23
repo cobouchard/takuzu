@@ -26,8 +26,4 @@ int checkArgGenerator(char *arg);
 
 int checkArgGeneratorInt(int N);
 
-void testing_grids();
-
-void end_of_main(char *output);
-
 #endif /* TAKUZU_H */
