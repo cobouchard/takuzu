@@ -79,7 +79,6 @@ int main(int argc, char *argv[]) {
                     if (temp_N == -1) {
                         errx(EXIT_FAILURE, "grids size must be 4, 8, 16, 32 or 64");
                     }
-                    printf("%d\n",temp_N);
                     parameters.N = temp_N;
                     optind++;
                 }

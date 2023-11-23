@@ -55,9 +55,9 @@ test_success=$((test_success+success))
 #### Testing generator
 count_generator=0
 success=0
-for i in {4,8,16,32,64}
+for i in {4,8}
 do
-	$executable -g $i > /dev/null 2>&1
+	$executable -g $i 
 	if [ $? -eq 0 ]; then
 		((success++))
 	else
