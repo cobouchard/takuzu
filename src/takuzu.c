@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
                     if (temp_N == -1) {
                         errx(EXIT_FAILURE, "grids size must be 4, 8, 16, 32 or 64");
                     }
-
+                    printf("%d\n",temp_N);
                     parameters.N = temp_N;
                     optind++;
                 }
@@ -124,6 +124,14 @@ int main(int argc, char *argv[]) {
         }
     } else if (argv[optind] != NULL) {
         errx(EXIT_FAILURE, "too many arguments for generator mode, no file needed");
+    }
+    else{ //generator mode
+        t_grid *generated = (t_grid *) malloc(sizeof(t_grid));
+        grid_allocate(generated,parameters.N);
+        generate_grid(parameters.N,generated);
+        grid_print(generated,stdout);
+        grid_free(generated);
+        free(generated);
     }
 
 

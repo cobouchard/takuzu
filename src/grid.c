@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include "../include/grid.h"
+#include "../include/heuristics.h"
 
 
 void grid_allocate(t_grid *g, int size) {
@@ -155,7 +156,13 @@ bool isConsistent(t_grid *g) {
         //checking that there are no consecutive characters
         if (hasConsecutiveCharacters(linesCodeZeroes[i]) || hasConsecutiveCharacters(linesCodeOnes[i]) ||
             hasConsecutiveCharacters(columnsCodeZeroes[i]) || hasConsecutiveCharacters(columnsCodeOnes[i])) {
-            return false;
+            /*printf("current i is %d \n current line code are %ld , %ld\n",i,linesCodeZeroes[i],linesCodeOnes[i]);
+            for(int j=0; j!=g->size;j++){
+                printf("%c",g->grid[i][j]);
+            }
+
+            printf("\n\nfor zeroes : %d for ones :  %d \n",hasConsecutiveCharacters(linesCodeZeroes[i]),hasConsecutiveCharacters(linesCodeOnes[i]));
+            */return false;
         }
 
         //checking that lines and columns are different
@@ -173,11 +180,13 @@ bool isConsistent(t_grid *g) {
             //if the position of zeroes and one is the same in both lines resp columns, the two are equals
             if (check_line) {
                 if (linesCodeOnes[i] == linesCodeOnes[j] && linesCodeZeroes[i] == linesCodeZeroes[j]) {
+                    printf("here2");
                     return false;
                 }
             }
             if (check_column) {
                 if (columnsCodeOnes[i] == columnsCodeOnes[j] && columnsCodeZeroes[i] == columnsCodeZeroes[j]) {
+                    printf("here3");
                     return false;
                 }
             }
@@ -188,6 +197,7 @@ bool isConsistent(t_grid *g) {
             countBits(columnsCodeOnes[i]) > g->size / 2 ||
             countBits(linesCodeZeroes[i]) > g->size / 2 ||
             countBits(linesCodeZeroes[i]) > g->size / 2) {
+            printf("here4");
             return false;
         }
         check_column = true;
@@ -199,7 +209,8 @@ bool isConsistent(t_grid *g) {
 
 
 bool hasConsecutiveCharacters(int64_t number) {
-    return number & (number >> 1) & (number >> 2);
+    uint64_t u_number = (uint64_t)number;
+    return u_number & (u_number >> 1) & (u_number >> 2);
 }
 
 int countBits(int64_t n) {
@@ -270,15 +281,24 @@ void generate_grid(int size, t_grid *g){
             i = rand()%size;
             j = rand()%size;
         }
-        g->grid[i][j] = rand()%2==1 ? '0' : '1';
-
+        char rand_char = rand()%2==1 ? '0' : '1';
+        g->grid[i][j] = rand_char;
+        if(!isConsistent(g)){
+            g->grid[i][j] = rand_char=='0' ? '1' : '0';
+        }
 
         if(!isConsistent(g)){
-            g->grid[i][j]='_';
+            grid_free(g);
+            generate_grid(size,g);
         }
-        else{
-            set_number--;
-        }
+        set_number--;
+
     }
 
+}
+
+bool solve(t_grid *g){
+    while(heuristics(g));
+
+    return is_valid(g);
 }

@@ -5,11 +5,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define set_bit(number, place) number = number | (1<<place)
-#define mask_nbits(size) (1 << size) - 1
+#define set_bit(number, place) number = number | (INT64_C(1)<<place)
+#define mask_nbits(size) (INT64_MAX >> (64-size))
 #define different(a, b) (a | b) != mask_nbits(g->size)
 
-#define percentage 40
+
+#define percentage 15
 
 typedef struct {
     int size;
@@ -45,5 +46,7 @@ bool fill_column(int column, t_grid *g, char c, int count);
 bool fill_line(int line, t_grid *g, char c, int count);
 
 void generate_grid(int size, t_grid *g);
+
+bool solve(t_grid *g);
 
 #endif 
