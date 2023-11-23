@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <dirent.h>
 #include <string.h>
 #include <stdbool.h>
 #include <getopt.h>
@@ -8,7 +7,6 @@
 
 #include "../include/takuzu.h"
 #include "../include/parser.h"
-#include "../include/heuristics.h"
 
 
 static struct Params parameters;

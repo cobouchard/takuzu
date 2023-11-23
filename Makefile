@@ -3,7 +3,7 @@ all:
 	@cp src/takuzu .
 
 clean: 
-	@rm -f src/*.o takuzu
+	@rm -f src/*.o takuzu src/takuzu
 
 help:
 	@echo "Usage: "
