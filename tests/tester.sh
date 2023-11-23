@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
-cant_parse_folder="parse_error"
-solvable_folder=solvable
-executable="../takuzu"
+cant_parse_folder="tests/parse_error"
+solvable_folder="tests/solvable"
+inconsistent_folder="tests/inconsistent"
+executable="takuzu"
 
-if [ "$(basename "$(pwd)")" != "tests" ]; then
-	echo "This script has to be executed from the tests folder."
+if [ "$(basename "$(pwd)")" != "takuzu" ]; then
+	echo "This script has to be executed from the root folder of the project."
 	exit 1
 fi
 test_count=0
@@ -17,11 +18,11 @@ count_parse=0
 success=0
 for file in "$cant_parse_folder"/*
 do
-	$executable $file > /dev/null 2>&1
+	./$executable $file > /dev/null 2>&1
 	if [ $? -eq 1 ]; then
 		((success++))
 	else
-		echo "$file has not exited with an error"
+		echo "$file has not exited with an error (parser error expected)"
 	fi
 	((count_parse++))
 done
@@ -31,13 +32,29 @@ test_count=$((test_count+count_parse))
 test_success=$((test_success+success))
 ####
 
+#### Testing grids that are not consistent
+count_inconsistent=0
+success=0
+for file in $inconsistent_folder/*
+do
+	./$executable $file > /dev/null 2>&1
+	if [ $? -eq 1 ]; then
+		((success++))
+	else
+		echo "$file has not exited with an error (consistency error expected)"
+	fi
+	((count_inconsistent++))
+done
 
-#### Testing files than can try to be solved
+echo "Executed all files in $inconsistent_folder ; $success out of $count_inconsistent exited with an error as intended"
+test_count=$((test_count+count_inconsistent))
+test_success=$((test_success+success))
+#### Testing grids than can try to be solved
 count_solvable=0
 success=0
 for file in "$solvable_folder"/*
 do
-	$executable $file > /dev/null 2>&1
+	./$executable $file > /dev/null 2>&1
 	if [ $? -eq 0 ]; then
 		((success++))
 	else
@@ -55,9 +72,9 @@ test_success=$((test_success+success))
 #### Testing generator
 count_generator=0
 success=0
-for i in {4,8}
+for i in {4,8,16,32,64}
 do
-	$executable -g $i 
+	./$executable -g $i > /dev/null 2>&1
 	if [ $? -eq 0 ]; then
 		((success++))
 	else

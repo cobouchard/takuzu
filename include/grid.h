@@ -10,7 +10,7 @@
 #define different(a, b) (a | b) != mask_nbits(g->size)
 
 
-#define percentage 15
+#define percentage 20
 
 typedef struct {
     int size;

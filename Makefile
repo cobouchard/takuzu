@@ -4,7 +4,9 @@ all:
 
 clean: 
 	@rm -f src/*.o takuzu src/takuzu
-
+test:
+	@cd tests
+	@tests/tester.sh
 help:
 	@echo "Usage: "
 	@echo "make [all]\t Build the software"

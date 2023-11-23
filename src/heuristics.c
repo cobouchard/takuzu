@@ -10,42 +10,51 @@
 bool heur_consecutive(t_grid *g){
     bool change = false;
     char current_char = '_';
-
-    for(int i=0; i!=g->size-1; i++){
-        for(int j=0; j!=g->size-1; j++){
+    for(int i=0; i!=g->size; i++){
+        for(int j=0; j!=g->size; j++){
             current_char=g->grid[i][j];
             if(current_char=='_'){
                 continue;
             }
-            if(g->grid[i][j+1]==current_char){
-                if(check_coord(i,j-1,g->size)){
-                    if(check_empty(i,j-1,g)){
-                        change=true;
-                        set_cell(i,j-1,g, other_char(current_char));
+
+            //check for consecutive char in columns
+            if(check_coord(i,j+1,g->size)){
+                if(g->grid[i][j+1]==current_char){
+                    if(check_coord(i,j-1,g->size)){
+                        if(check_empty(i,j-1,g)){
+                            change=true;
+                            set_cell(i,j-1,g, other_char(current_char));
+                        }
                     }
-                }
-                if(check_coord(i,j+2,g->size)){
-                    if(check_empty(i,j+2,g)){
-                        change=true;
-                        set_cell(i,j+2,g,other_char(current_char));
+                    if(check_coord(i,j+2,g->size)){
+                        if(check_empty(i,j+2,g)){
+                            change=true;
+                            set_cell(i,j+2,g,other_char(current_char));
+                        }
                     }
                 }
             }
 
-            if(g->grid[i+1][j]==current_char){
-                if(check_coord(i-1,j,g->size)){
-                    if(check_empty(i-1,j,g)){
-                        change=true;
-                        set_cell(i-1,j,g,other_char(current_char));
+
+            //check for consecutives char in lines
+
+            if(check_coord(i+1,j,g->size)){
+                if(g->grid[i+1][j]==current_char){
+                    if(check_coord(i-1,j,g->size)){
+                        if(check_empty(i-1,j,g)){
+                            change=true;
+                            set_cell(i-1,j,g,other_char(current_char));
+                        }
                     }
-                }
-                if(check_coord(i+2,j,g->size)){
-                    if(check_empty(i+2,j,g)){
-                        change=true;
-                        set_cell(i+2,j,g,other_char(current_char));
+                    if(check_coord(i+2,j,g->size)){
+                        if(check_empty(i+2,j,g)){
+                            change=true;
+                            set_cell(i+2,j,g,other_char(current_char));
+                        }
                     }
                 }
             }
+
         }
     }
 

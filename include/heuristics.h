@@ -10,6 +10,7 @@
 
 #define heuristics(grid) heur_consecutive(grid)|heur_fill(grid)
 
+
 bool heur_consecutive(t_grid *g);
 
 bool heur_fill(t_grid *g);

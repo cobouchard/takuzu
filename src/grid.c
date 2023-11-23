@@ -300,7 +300,8 @@ void generate_grid(int size, t_grid *g){
 }
 
 bool solve(t_grid *g){
-    while(heuristics(g));
+    bool change=false;
+    while((change=heuristics(g)));
 
-    return is_valid(g);
+    return change;
 }

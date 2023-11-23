@@ -121,12 +121,16 @@ int main(int argc, char *argv[]) {
             }
         }
 
+        if(!isConsistent(grid)){
+            //if the grid is not consistent, we wont try to solve it and exit with an error
+            errx(EXIT_FAILURE, "The grid given in input is not consistent.\n");
+        }
         solve(grid);
         if(is_valid(grid)){
             printf("The grid has been solved !\n");
         }
         else{
-            printf("The grid hasn't been solved entirely.\n");
+            printf("The grid hasn't been solved entirely or cannot be solved.\n");
         }
         grid_print(grid,output_file);
         grid_free(grid);
