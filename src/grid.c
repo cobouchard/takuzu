@@ -274,10 +274,11 @@ void generate_grid(int size, t_grid *g){
 
     grid_allocate(g,size);
     int set_number = percentage*size*size/100;
+    int tries = set_number*100;
     srand(time(NULL));
     int i = rand()%size, j = rand()%size;
 
-    while(set_number!=0){
+    while(set_number!=0 || tries!=0){
         while(g->grid[i][j]!='_'){
             i = rand()%size;
             j = rand()%size;
@@ -294,7 +295,7 @@ void generate_grid(int size, t_grid *g){
             generate_grid(size,g);
         }
         set_number--;
-
+        tries--;
     }
 
 }

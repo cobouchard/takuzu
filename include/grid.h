@@ -5,9 +5,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define set_bit(number, place) number = number | (INT64_C(1)<<place)
+#define set_bit(number, place) (number = number | (INT64_C(1)<<place))
 #define mask_nbits(size) (INT64_MAX >> (64-size))
-#define different(a, b) (a | b) != mask_nbits(g->size)
+#define different(a, b) ((a | b) != mask_nbits(g->size))
 
 
 #define percentage 20
