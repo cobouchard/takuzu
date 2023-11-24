@@ -147,6 +147,9 @@ int main(int argc, char *argv[]) {
         t_grid *generated = (t_grid *) malloc(sizeof(t_grid));
         grid_allocate(generated,parameters.N);
         generate_grid(parameters.N,generated);
+        if(!isConsistent(generated)){
+            errx(EXIT_FAILURE,"The generated grid is not consistent\n");
+        }
         if(parameters.output==NULL){
             grid_print(generated,stdout);
         }
