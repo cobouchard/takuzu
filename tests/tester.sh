@@ -94,7 +94,6 @@ count_valgrind=0
 success=0
 for argument in {"-g 4","-g 32","$solvable_folder/correct.txt"}
 do
-	echo "$argument"
 	$VALGRIND_CMD ./$executable $argument > /dev/null 2>&1
 	if [ $? -eq 0 ]; then
 		((success++))

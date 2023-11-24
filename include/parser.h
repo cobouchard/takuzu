@@ -14,9 +14,8 @@ bool check_separator(const char c);
 
 void file_parser(t_grid *grid, FILE *filename, int *parameters_size);
 
-void readLine(char *line, int size, int current_line, char *line_to_return);
+void readLine(char *line, int size, int current_line, char *line_to_return, int *count_char);
 
-int countCharInString(char *string);
 
 
 #endif 
