@@ -81,3 +81,32 @@ bool heur_fill(t_grid *g){
 
     return change;
 }
+
+bool heur_between(t_grid *g){
+    bool change=false;
+    for(int i=0; i!=g->size; i++){
+        for(int j=0; j!=g->size; j++){
+            char current_char=g->grid[i][j];
+            if(current_char!='_'){
+                continue;
+            }
+
+            //we check that left and right are equals
+            if(check_coord(i-1,j,g->size) && check_coord(i+1,j,g->size)){
+                if(g->grid[i-1][j]==g->grid[i+1][j] && g->grid[i-1][j]!='_'){
+                    change=true;
+                    set_cell(i,j,g,other_char(g->grid[i-1][j]));
+                }
+            }
+
+            //we do the same for top and bottom
+            if(check_coord(i,j-1,g->size) && check_coord(i,j+1,g->size)){
+                if(g->grid[i][j-1]==g->grid[i][j+1] && g->grid[i][j-1]!='_'){
+                    change=true;
+                    set_cell(i,j,g,other_char(g->grid[i][j-1]));
+                }
+            }
+        }
+    }
+    return change;
+}

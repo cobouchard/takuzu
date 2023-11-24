@@ -156,13 +156,7 @@ bool isConsistent(t_grid *g) {
         //checking that there are no consecutive characters
         if (hasConsecutiveCharacters(linesCodeZeroes[i]) || hasConsecutiveCharacters(linesCodeOnes[i]) ||
             hasConsecutiveCharacters(columnsCodeZeroes[i]) || hasConsecutiveCharacters(columnsCodeOnes[i])) {
-            /*printf("current i is %d \n current line code are %ld , %ld\n",i,linesCodeZeroes[i],linesCodeOnes[i]);
-            for(int j=0; j!=g->size;j++){
-                printf("%c",g->grid[i][j]);
-            }
-
-            printf("\n\nfor zeroes : %d for ones :  %d \n",hasConsecutiveCharacters(linesCodeZeroes[i]),hasConsecutiveCharacters(linesCodeOnes[i]));
-            */return false;
+            return false;
         }
 
         //checking that lines and columns are different
@@ -180,13 +174,11 @@ bool isConsistent(t_grid *g) {
             //if the position of zeroes and one is the same in both lines resp columns, the two are equals
             if (check_line) {
                 if (linesCodeOnes[i] == linesCodeOnes[j] && linesCodeZeroes[i] == linesCodeZeroes[j]) {
-                    printf("here2");
                     return false;
                 }
             }
             if (check_column) {
                 if (columnsCodeOnes[i] == columnsCodeOnes[j] && columnsCodeZeroes[i] == columnsCodeZeroes[j]) {
-                    printf("here3");
                     return false;
                 }
             }
@@ -197,7 +189,6 @@ bool isConsistent(t_grid *g) {
             countBits(columnsCodeOnes[i]) > g->size / 2 ||
             countBits(linesCodeZeroes[i]) > g->size / 2 ||
             countBits(linesCodeZeroes[i]) > g->size / 2) {
-            printf("here4");
             return false;
         }
         check_column = true;
@@ -274,11 +265,11 @@ void generate_grid(int size, t_grid *g){
 
     grid_allocate(g,size);
     int set_number = percentage*size*size/100;
-    int tries = set_number*100;
+    int tries = set_number*10000;
     srand(time(NULL));
     int i = rand()%size, j = rand()%size;
 
-    while(set_number!=0 || tries!=0){
+    while(set_number!=0 && tries!=0){
         while(g->grid[i][j]!='_'){
             i = rand()%size;
             j = rand()%size;

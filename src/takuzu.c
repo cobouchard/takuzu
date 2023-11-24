@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
                     optind++;
                 }
 
-                printf("Generating grids for N=%d\n", parameters.N);
+                printf("#Generating grids for N=%d\n", parameters.N);
                 parameters.solver_mode = false;
                 break;
         }
