@@ -18,4 +18,5 @@ bool heur_fill(t_grid *g);
 bool heur_between(t_grid *g);
 
 
+
 #endif

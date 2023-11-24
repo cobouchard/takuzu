@@ -17,6 +17,14 @@ typedef struct {
     char **grid;
 } t_grid;
 
+typedef struct {
+    int row;
+    int column;
+    char choice;
+} t_choice;
+
+typedef enum{MODE_FIRST,MODE_ALL} t_mode;
+
 void grid_allocate(t_grid *g, int size);
 
 void grid_free(const t_grid *g);
@@ -48,5 +56,13 @@ bool fill_line(int line, t_grid *g, char c, int count);
 void generate_grid(int size, t_grid *g);
 
 bool solve(t_grid *g);
+
+void grid_choice_apply(t_grid *g,const t_choice choice);
+
+void grid_choice_print(const t_choice choice, FILE *fd);
+
+t_choice grid_choice(t_grid *g);
+
+t_grid *grid_solver(t_grid *g, const t_mode);
 
 #endif 

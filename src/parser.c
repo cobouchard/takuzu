@@ -60,6 +60,7 @@ void file_parser(t_grid *grid, FILE *file, int *parameters_size) {
         }
 
         if (current_size != *parameters_size) {
+            free(line);
             errx(EXIT_FAILURE,
                  "Incorrect number of significant characters '%d' in line '%d'; %d was expected as in the first uncommented line.\n",
                  current_size, current_line + 1, *parameters_size);
@@ -72,6 +73,7 @@ void file_parser(t_grid *grid, FILE *file, int *parameters_size) {
     }
 
     if (current_line != *parameters_size) {
+        free(line);
         errx(EXIT_FAILURE, "Incorrect number of lines, %d lines found.", current_line);
     }
 
@@ -79,9 +81,11 @@ void file_parser(t_grid *grid, FILE *file, int *parameters_size) {
 }
 
 int countCharInString(char *string) {
+    if(string==NULL){
+        return 0;
+    }
     int sum = 0;
     char c = string[0];
-
     while (c != '\n' && c != '\0') {
         sum++;
         c = string[sum];

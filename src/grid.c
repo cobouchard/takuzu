@@ -2,7 +2,6 @@
 #include <err.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <time.h>
 #include "../include/grid.h"
 #include "../include/heuristics.h"
 
@@ -266,7 +265,7 @@ void generate_grid(int size, t_grid *g){
     grid_allocate(g,size);
     int set_number = percentage*size*size/100;
     int tries = set_number*10000;
-    srand(time(NULL));
+
     int i = rand()%size, j = rand()%size;
 
     while(set_number!=0 && tries!=0){
@@ -277,7 +276,7 @@ void generate_grid(int size, t_grid *g){
         char rand_char = rand()%2==1 ? '0' : '1';
         g->grid[i][j] = rand_char;
         if(!isConsistent(g)){
-            g->grid[i][j] = rand_char=='0' ? '1' : '0';
+            g->grid[i][j] = other_char(rand_char);
         }
 
         if(!isConsistent(g)){
@@ -293,7 +292,32 @@ void generate_grid(int size, t_grid *g){
 
 bool solve(t_grid *g){
     bool change=false;
-    while((change=heuristics(g)));
+    while((change=heuristics(g) && isConsistent(g)));
 
     return change;
+}
+
+void grid_choice_apply(t_grid *g,const t_choice choice){
+    g->grid[choice.row][choice.column]=choice.choice;
+}
+
+void grid_choice_print(const t_choice choice, FILE *fd){
+    fprintf(fd,"Chose %c at line=%d and column=%d\n",choice.choice,choice.row,choice.column);
+}
+
+t_choice grid_choice(t_grid *g){
+    t_choice choice;
+
+    int i = rand()%g->size, j = rand()%g->size;
+    char rand_char = rand()%2==1 ? '0' : '1';
+
+    while(g->grid[i][j]!='_'){
+            i = rand()%g->size;
+            j = rand()%g->size;
+    }
+
+    choice.row=i;
+    choice.column=j;
+    choice.choice=rand_char;
+    return choice;
 }

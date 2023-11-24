@@ -4,6 +4,7 @@ cant_parse_folder="tests/parse_error"
 solvable_folder="tests/solvable"
 inconsistent_folder="tests/inconsistent"
 executable="takuzu"
+VALGRIND_CMD="valgrind --leak-check=full --error-exitcode=1"
 
 if [ "$(basename "$(pwd)")" != "takuzu" ]; then
 	echo "This script has to be executed from the root folder of the project."
@@ -88,8 +89,24 @@ test_success=$((test_success+success))
 ####
 
 
-#### Testing arguments parser
+#### Testing Valgrind
+count_valgrind=0
+success=0
+for argument in {"-g 4","-g 32","$solvable_folder/correct.txt"}
+do
+	echo "$argument"
+	$VALGRIND_CMD ./$executable $argument > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		((success++))
+	else
+		echo "Valgrind found memory leaks executing $VALGRIND_CMD ./$executable $argument"
+	fi
+	((count_valgrind++))
+done
 
+test_count=$((test_count+count_valgrind))
+test_success=$((test_success+success))
+echo "Valgrind tested arguments for $executable, $success out of $count_valgrind didn't have any memory leaks"
 
 echo ""
-echo "$test_count / $test_success tests passed correctly"
+echo "$test_success / $test_count tests passed correctly"

@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <getopt.h>
 #include <err.h>
+#include <time.h>
 
 #include "../include/takuzu.h"
 #include "../include/parser.h"
@@ -20,6 +21,7 @@ int main(int argc, char *argv[]) {
     parameters.N = DEFAULT_N;
     parameters.all = DEFAULT_ALL;
     parameters.unique = DEFAULT_UNIQUE;
+    srand(time(NULL));
 
     static struct option long_options[] =
             {
@@ -64,10 +66,10 @@ int main(int argc, char *argv[]) {
                 }
 
                 printf("Searching for all possibles solutions\n");
-                parameters.all = true;
+                parameters.all = MODE_ALL;
                 break;
             case 'g':
-                if (parameters.all) {
+                if (parameters.all==MODE_ALL) {
                     warnx("mode \"generator\" incompatible with option \"all\" ");
                     exit(EXIT_FAILURE);
                 }
@@ -145,9 +147,10 @@ int main(int argc, char *argv[]) {
     }
     else{ //generator mode
         t_grid *generated = (t_grid *) malloc(sizeof(t_grid));
-        grid_allocate(generated,parameters.N);
         generate_grid(parameters.N,generated);
         if(!isConsistent(generated)){
+            grid_free(generated);
+            free(generated);
             errx(EXIT_FAILURE,"The generated grid is not consistent\n");
         }
         if(parameters.output==NULL){
@@ -157,6 +160,8 @@ int main(int argc, char *argv[]) {
             FILE *file;
             file = fopen(parameters.output, "w+");
             if(file==NULL){
+                grid_free(generated);
+                free(generated);
                 errx(EXIT_FAILURE, "Couldn't open file %s to write the output of generator\n",parameters.output);
             }
             grid_print(generated,file);
