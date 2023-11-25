@@ -213,7 +213,7 @@ int countBits(int64_t n) {
     return count;
 }
 
-bool is_valid(t_grid *g) {
+bool is_full(t_grid *g){
     for (int i = 0; i != g->size; i++) {
         for (int j = 0; j != g->size; j++) {
             if (g->grid[i][j] == '_') {
@@ -221,7 +221,11 @@ bool is_valid(t_grid *g) {
             }
         }
     }
-    return isConsistent(g);
+    return true;
+}
+
+bool is_valid(t_grid *g) {
+    return isConsistent(g) && is_full(g);
 }
 
 bool fill_column(int column, t_grid *g, char c, int count){
@@ -291,10 +295,12 @@ void generate_grid(int size, t_grid *g){
 }
 
 bool solve(t_grid *g){
-    bool change=false;
-    while((change=heuristics(g) && isConsistent(g)));
+    bool consistent=true;
+    while(heuristics(g) && consistent){
+        consistent= isConsistent(g);
+    }
 
-    return change;
+    return consistent;
 }
 
 void grid_choice_apply(t_grid *g,const t_choice choice){
@@ -302,7 +308,7 @@ void grid_choice_apply(t_grid *g,const t_choice choice){
 }
 
 void grid_choice_print(const t_choice choice, FILE *fd){
-    fprintf(fd,"Chose %c at line=%d and column=%d\n",choice.choice,choice.row,choice.column);
+    fprintf(fd,"Chose %c at line=%d and column=%d\n",choice.choice,choice.row+1,choice.column+1);
 }
 
 t_choice grid_choice(t_grid *g){
@@ -320,4 +326,31 @@ t_choice grid_choice(t_grid *g){
     choice.column=j;
     choice.choice=rand_char;
     return choice;
+}
+
+t_grid *grid_solver(t_grid *g, const t_mode mode){
+    t_choice choice = grid_choice(g);
+    t_grid *copy = (t_grid *) malloc(sizeof(t_grid));
+    grid_copy(g,copy);
+    grid_choice_apply(copy,choice);
+    printf("\n");
+    //grid_choice_print(choice,stdout);
+    //grid_print(copy,stdout);
+    bool consistent=solve(copy);
+    //if the grid is not consistent here, perhaps the choice was wrong
+    if(!consistent){
+        printf("change of choice\n");
+        choice.choice=other_char(choice.choice);
+        grid_copy(g,copy);
+        grid_choice_apply(copy,choice);
+        return grid_solver(copy,mode);
+    }
+
+    if(is_full(copy)){
+        return copy;
+    }
+    //the grid is not complete
+    return grid_solver(copy,mode);
+
+
 }

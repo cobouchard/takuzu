@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 #define set_bit(number, place) (number = number | (INT64_C(1)<<place))
-#define mask_nbits(size) (INT64_MAX >> (64-size))
+#define mask_nbits(size) (INT64_MAX >> (64-size-1))
 #define different(a, b) ((a | b) != mask_nbits(g->size))
 
 
@@ -49,6 +49,8 @@ bool hasConsecutiveCharacters(int64_t number);
 
 bool is_valid(t_grid *g);
 
+bool is_full(t_grid *g);
+
 bool fill_column(int column, t_grid *g, char c, int count);
 
 bool fill_line(int line, t_grid *g, char c, int count);
@@ -63,6 +65,6 @@ void grid_choice_print(const t_choice choice, FILE *fd);
 
 t_choice grid_choice(t_grid *g);
 
-t_grid *grid_solver(t_grid *g, const t_mode);
+t_grid *grid_solver(t_grid *g, const t_mode mode);
 
 #endif 
