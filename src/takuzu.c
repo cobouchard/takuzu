@@ -21,7 +21,10 @@ int main(int argc, char *argv[]) {
     parameters.N = DEFAULT_N;
     parameters.all = DEFAULT_ALL;
     parameters.unique = DEFAULT_UNIQUE;
-    srand(time(NULL));
+    //int rand = time(NULL);
+    //srand(rand);
+    //printf("%d",rand);
+    srand(1700951896);
 
     static struct option long_options[] =
             {
@@ -83,7 +86,7 @@ int main(int argc, char *argv[]) {
                     optind++;
                 }
 
-                printf("#Generating grids for N=%d\n", parameters.N);
+                printf("Generating grids for N=%d\n", parameters.N);
                 parameters.solver_mode = false;
                 break;
         }
@@ -139,9 +142,7 @@ int main(int argc, char *argv[]) {
         }
         grid_print(result,output_file);
         grid_free(result);
-        grid_free(grid);
         free(result);
-        free(grid);
         fclose(input_file);
         if(output_file!=stdout){
             fclose(output_file);

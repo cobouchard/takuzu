@@ -29,7 +29,7 @@ void grid_allocate(t_grid *g, int size) {
 }
 
 
-void grid_free(const t_grid *g) {
+void grid_free(t_grid *g) {
     if (g == NULL) {
         return;
     }
@@ -268,7 +268,7 @@ void generate_grid(int size, t_grid *g){
 
     grid_allocate(g,size);
     int set_number = percentage*size*size/100;
-    int tries = set_number*10000;
+    int tries = set_number*100000;
 
     int i = rand()%size, j = rand()%size;
 
@@ -318,8 +318,8 @@ t_choice grid_choice(t_grid *g){
     char rand_char = rand()%2==1 ? '0' : '1';
 
     while(g->grid[i][j]!='_'){
-            i = rand()%g->size;
-            j = rand()%g->size;
+        i = rand()%g->size;
+        j = rand()%g->size;
     }
 
     choice.row=i;
@@ -328,29 +328,41 @@ t_choice grid_choice(t_grid *g){
     return choice;
 }
 
+/**
+ * we suppose that heuristics have already applied before first entering the function
+ * @param g
+ * @param mode
+ * @return
+ */
 t_grid *grid_solver(t_grid *g, const t_mode mode){
     t_choice choice = grid_choice(g);
     t_grid *copy = (t_grid *) malloc(sizeof(t_grid));
     grid_copy(g,copy);
     grid_choice_apply(copy,choice);
-    printf("\n");
-    //grid_choice_print(choice,stdout);
-    //grid_print(copy,stdout);
     bool consistent=solve(copy);
+
     //if the grid is not consistent here, perhaps the choice was wrong
     if(!consistent){
-        printf("change of choice\n");
         choice.choice=other_char(choice.choice);
         grid_copy(g,copy);
         grid_choice_apply(copy,choice);
+        grid_free(g);
+        free(g);
         return grid_solver(copy,mode);
     }
 
+    grid_free(g);
+    free(g);
     if(is_full(copy)){
         return copy;
     }
     //the grid is not complete
     return grid_solver(copy,mode);
-
-
 }
+
+t_grid *grid_solver2(t_grid *g, const t_mode mode){
+    t_choice choice = grid_choice(g);
+}
+
+//idee 1 apres le premier choix, appel recursif mais pas return on regarde si le retour est consistent,
+// si pas consistent, on va voir l'autre branche, si il est consistent, en mode first on s'arrete, en mode all on explore l'autre choix

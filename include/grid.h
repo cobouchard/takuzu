@@ -5,12 +5,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define set_bit(number, place) (number = number | (INT64_C(1)<<place))
-#define mask_nbits(size) (INT64_MAX >> (64-size-1))
+#define set_bit(number, place) (number = number | (UINT64_C(1)<<place))
+#define mask_nbits(size) ( (size==64) ? UINT64_MAX : UINT64_MAX >> (64-size))
 #define different(a, b) ((a | b) != mask_nbits(g->size))
 
 
-#define percentage 20
+#define percentage 30
 
 typedef struct {
     int size;
@@ -27,7 +27,7 @@ typedef enum{MODE_FIRST,MODE_ALL} t_mode;
 
 void grid_allocate(t_grid *g, int size);
 
-void grid_free(const t_grid *g);
+void grid_free(t_grid *g);
 
 void grid_print(const t_grid *g, FILE *fd);
 
