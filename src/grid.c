@@ -362,6 +362,36 @@ t_grid *grid_solver(t_grid *g, const t_mode mode){
 
 t_grid *grid_solver2(t_grid *g, const t_mode mode){
     t_choice choice = grid_choice(g);
+    t_grid *copy = (t_grid *) malloc(sizeof(t_grid));
+    grid_copy(g,copy);
+    grid_choice_apply(copy,choice);
+    bool consistent=solve(copy);
+    bool full= is_full(copy);
+
+    //the grid is full and consistent :
+    //we can return the current grid (copy)
+    if(full && consistent){
+        grid_free(g);
+        free(g);
+        return copy;
+    }
+
+    //the grid is not consistent :
+    //the choice was wrong, we go explore the other choice
+    if(!consistent){
+        choice.choice=other_char(choice.choice);
+        grid_copy(g,copy); //we remove changes that were made
+        grid_choice_apply(copy,choice); //and apply the new choice
+        grid_free(g);
+        free(g);
+        return grid_solver2(copy,mode);
+    }
+
+
+    //the grid is not full but consistent
+    //the choice may have been wrong, but we can't know yet, we have to explore both path.
+    //both path could lead to valid solutions, depending on the mode we only return the first solution or all of them
+    
 }
 
 //idee 1 apres le premier choix, appel recursif mais pas return on regarde si le retour est consistent,
