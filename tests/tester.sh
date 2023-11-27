@@ -106,6 +106,7 @@ done
 test_count=$((test_count+count_valgrind))
 test_success=$((test_success+success))
 echo "Valgrind tested arguments for $executable, $success out of $count_valgrind didn't have any memory leaks"
+echo "INCOMPLETE TESTING HERE"
 
 echo ""
 echo "$test_success / $test_count tests passed correctly"
