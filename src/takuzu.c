@@ -21,10 +21,10 @@ int main(int argc, char *argv[]) {
     parameters.N = DEFAULT_N;
     parameters.all = DEFAULT_ALL;
     parameters.unique = DEFAULT_UNIQUE;
-    //int rand = time(NULL);
-    //srand(rand);
-    //printf("%d",rand);
-    srand(1700951896);
+    int rand = time(NULL);
+    srand(rand);
+    printf("%d\n",rand);
+    srand(1701090855);
 
     static struct option long_options[] =
             {
@@ -126,13 +126,26 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        if(!isConsistent(grid)){
+        if(!is_consistent(grid)){
             //if the grid is not consistent, we wont try to solve it and exit with an error
             errx(EXIT_FAILURE, "The grid given in input is not consistent.\n");
         }
 
-        solve(grid);
-        t_grid *result = grid_solver(grid,MODE_FIRST);
+        if(!solve(grid)){
+            //the grid is not consistent after only application of heuristics, it's an impossible grid
+            grid_print(grid,stdout);
+            errx(EXIT_FAILURE,"grid cannot be solved, not consistent after heuristics");
+        }
+
+        t_grid *result;
+
+        if(!is_full(grid)){
+            //the grid haven't been solved only by the heuristics, we apply backtracking
+            result = grid_solver2(grid,MODE_FIRST);
+        } else{
+            //the grid have been solved by the heuristics only
+            result=grid;
+        }
 
         if(is_valid(result)){
             printf("The grid has been solved !\n");
@@ -154,7 +167,7 @@ int main(int argc, char *argv[]) {
     else{ //generator mode
         t_grid *generated = (t_grid *) malloc(sizeof(t_grid));
         generate_grid(parameters.N,generated);
-        if(!isConsistent(generated)){
+        if(!is_consistent(generated)){
             grid_free(generated);
             free(generated);
             errx(EXIT_FAILURE,"The generated grid is not consistent\n");

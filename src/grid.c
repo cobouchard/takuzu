@@ -134,7 +134,7 @@ int64_t columnToInt(t_grid *g, int column, char c) {
  * @param g
  * @return true if there are no consecutive 0 or 1 AND if no two lines or two columns are equals
  */
-bool isConsistent(t_grid *g) {
+bool is_consistent(t_grid *g) {
     int64_t linesCodeOnes[g->size];
     int64_t columnsCodeOnes[g->size];
 
@@ -225,7 +225,7 @@ bool is_full(t_grid *g){
 }
 
 bool is_valid(t_grid *g) {
-    return isConsistent(g) && is_full(g);
+    return is_consistent(g) && is_full(g);
 }
 
 bool fill_column(int column, t_grid *g, char c, int count){
@@ -279,11 +279,11 @@ void generate_grid(int size, t_grid *g){
         }
         char rand_char = rand()%2==1 ? '0' : '1';
         g->grid[i][j] = rand_char;
-        if(!isConsistent(g)){
+        if(!is_consistent(g)){
             g->grid[i][j] = other_char(rand_char);
         }
 
-        if(!isConsistent(g)){
+        if(!is_consistent(g)){
             //if we can't set a 0 or a 1 to this empty space, the grid will never have a solution, we start again from the start
             grid_free(g);
             generate_grid(size,g);
@@ -297,7 +297,7 @@ void generate_grid(int size, t_grid *g){
 bool solve(t_grid *g){
     bool consistent=true;
     while(heuristics(g) && consistent){
-        consistent= isConsistent(g);
+        consistent= is_consistent(g);
     }
 
     return consistent;
@@ -388,11 +388,25 @@ t_grid *grid_solver2(t_grid *g, const t_mode mode){
     }
 
 
-    //the grid is not full but consistent
-    //the choice may have been wrong, but we can't know yet, we have to explore both path.
-    //both path could lead to valid solutions, depending on the mode we only return the first solution or all of them
-    
-}
+    t_grid *parcours = grid_solver2(copy,mode);
+    if(is_consistent(parcours)){
+        //the choice was correct, we return either the first solutions or all of them
+        if(mode==MODE_FIRST){
+            grid_free(g);
+            free(g);
+            return parcours;
+        }
+        else{
+            printf("i'm here\n");
+            return NULL; // #TODO return all solutions
+        }
+    }
+    grid_free(parcours);
+    free(parcours);
 
-//idee 1 apres le premier choix, appel recursif mais pas return on regarde si le retour est consistent,
-// si pas consistent, on va voir l'autre branche, si il est consistent, en mode first on s'arrete, en mode all on explore l'autre choix
+    //the grid is not consistent, the choice was wrong, we backtrack
+    choice.choice=other_char(choice.choice);
+    grid_copy(g,copy); //we remove changes that were made
+    grid_choice_apply(copy,choice); //and apply the new choice
+    return grid_solver2(copy,mode);
+}

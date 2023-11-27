@@ -10,7 +10,7 @@
 #define different(a, b) ((a | b) != mask_nbits(g->size))
 
 
-#define percentage 30
+#define percentage 20
 
 typedef struct {
     int size;
@@ -41,7 +41,7 @@ int64_t lineToInt(t_grid *g, int line, char c);
 
 int64_t columnToInt(t_grid *g, int column, char c);
 
-bool isConsistent(t_grid *g);
+bool is_consistent(t_grid *g);
 
 int countBits(int64_t n);
 
@@ -66,5 +66,7 @@ void grid_choice_print(const t_choice choice, FILE *fd);
 t_choice grid_choice(t_grid *g);
 
 t_grid *grid_solver(t_grid *g, const t_mode mode);
+
+t_grid *grid_solver2(t_grid *g, const t_mode mode);
 
 #endif 
