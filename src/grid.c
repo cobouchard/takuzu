@@ -373,6 +373,7 @@ t_grid *grid_solver2(t_grid *g, const t_mode mode){
     if(full && consistent){
         grid_free(g);
         free(g);
+        g=NULL;
         return copy;
     }
 
@@ -384,20 +385,24 @@ t_grid *grid_solver2(t_grid *g, const t_mode mode){
         grid_choice_apply(copy,choice); //and apply the new choice
         grid_free(g);
         free(g);
+        g=NULL;
         return grid_solver2(copy,mode);
     }
 
 
-    t_grid *parcours = grid_solver2(copy,mode);
+    //the grid is not full but consistent
+    //the choice made, can be wrong or right, we keep exploring and we will backtrack if we are led on an inconsistent grid
+    t_grid *parcours = grid_solver2(copy,mode); //this frees copy
     if(is_consistent(parcours)){
+
         //the choice was correct, we return either the first solutions or all of them
         if(mode==MODE_FIRST){
             grid_free(g);
             free(g);
+            g=NULL;
             return parcours;
         }
         else{
-            printf("i'm here\n");
             return NULL; // #TODO return all solutions
         }
     }
@@ -408,5 +413,7 @@ t_grid *grid_solver2(t_grid *g, const t_mode mode){
     choice.choice=other_char(choice.choice);
     grid_copy(g,copy); //we remove changes that were made
     grid_choice_apply(copy,choice); //and apply the new choice
+    grid_free(g);
+    free(g);
     return grid_solver2(copy,mode);
 }
