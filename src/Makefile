@@ -11,7 +11,7 @@ takuzu.o: takuzu.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
 
 grid.o: grid.c ../include/grid.h
-	$(CC) $(CLAFGS) $(CPPFLAGS) -c grid.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c grid.c
 
 parser.o: parser.c ../include/parser.h
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c parser.c

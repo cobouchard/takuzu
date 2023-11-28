@@ -66,6 +66,10 @@ void grid_copy(t_grid *grid_to_copy, t_grid *grid_result) {
     if (grid_to_copy == NULL) {
         errx(EXIT_FAILURE, "trying to copy an unallocated grid");
     }
+
+    if(grid_result!=NULL){
+        grid_free(grid_result);
+    }
     grid_allocate(grid_result, grid_to_copy->size);
 
 
@@ -408,7 +412,6 @@ t_grid *grid_solver2(t_grid *g, const t_mode mode){
     }
     grid_free(parcours);
     free(parcours);
-
     //the grid is not consistent, the choice was wrong, we backtrack
     choice.choice=other_char(choice.choice);
     grid_copy(g,copy); //we remove changes that were made
