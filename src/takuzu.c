@@ -12,6 +12,31 @@
 
 static struct Params parameters;
 
+int main2(char *argv[]){
+    t_grid *grid = (t_grid *) malloc(sizeof(t_grid));
+    FILE *input_file;
+    input_file = fopen(argv[1],"r");
+    file_parser(grid,input_file,&parameters.N);
+    solve(grid);
+    if(!is_consistent(grid)){
+        grid_print(grid, stdout);
+        errx(EXIT_FAILURE,"the grid is not consistent just after heuristics\n");
+    }
+    if(is_full(grid)){
+        grid_print(grid, stdout);
+        errx(EXIT_SUCCESS,"the grid is solved just after heuristics\n");
+    }
+
+    t_grid *result=(t_grid *)malloc(sizeof (t_grid));
+    result= grid_solver2(grid,MODE_FIRST);
+    grid_print(result, stdout);
+
+    grid_free(result);
+    free(result);
+    fclose(input_file);
+    errx(EXIT_SUCCESS,"end of main2\n");
+}
+
 int main(int argc, char *argv[]) {
 
 
@@ -25,6 +50,8 @@ int main(int argc, char *argv[]) {
     srand(rand);
     printf("%d\n",rand);
     srand(1701109528);
+
+    //main2(argv);
 
     static struct option long_options[] =
             {
@@ -137,25 +164,25 @@ int main(int argc, char *argv[]) {
             errx(EXIT_FAILURE,"grid cannot be solved, not consistent after heuristics");
         }
 
-        t_grid *result;
+
 
         if(!is_full(grid)){
             //the grid haven't been solved only by the heuristics, we apply backtracking
-            result = grid_solver2(grid,MODE_FIRST);
+            grid= grid_solver2(grid,MODE_FIRST);
         } else{
             //the grid have been solved by the heuristics only
-            result=grid;
+            //result=grid;
         }
 
-        if(is_valid(result)){
+        if(is_valid(grid)){
             printf("The grid has been solved !\n");
         }
         else{
             printf("The grid hasn't been solved entirely or cannot be solved.\n");
         }
-        grid_print(result,output_file);
-        grid_free(result);
-        free(result);
+        grid_print(grid,output_file);
+        grid_free(grid);
+        free(grid);
         fclose(input_file);
         if(output_file!=stdout){
             fclose(output_file);
