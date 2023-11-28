@@ -7,7 +7,7 @@
 
 #define set_bit(number, place) (number = number | (UINT64_C(1)<<place))
 #define mask_nbits(size) ( (size==64) ? UINT64_MAX : UINT64_MAX >> (64-size))
-#define different(a, b) ((a | b) != mask_nbits(g->size))
+#define different(a, b) ( (uint64_t )(a | b) != (uint64_t )mask_nbits(g->size))
 
 
 #define percentage 20

@@ -16,6 +16,7 @@ void grid_allocate(t_grid *g, int size) {
 
     for (int i = 0; i < size; ++i) {
         g->grid[i] = (char *) malloc(size * sizeof(char));
+
         if (g->grid[i] == NULL) {
             grid_free(g);
             warnx("Fail in the allocation of each row of grid in t_grid");
@@ -39,7 +40,10 @@ void grid_free(t_grid *g) {
         }
     }
 
-    free(g->grid);
+    if(g->grid!=NULL){
+        free(g->grid);
+    }
+
 }
 
 
@@ -66,12 +70,13 @@ void grid_copy(t_grid *grid_to_copy, t_grid *grid_result) {
     if (grid_to_copy == NULL) {
         errx(EXIT_FAILURE, "trying to copy an unallocated grid");
     }
+    grid_result->size=grid_to_copy->size;
 
-    if(grid_result!=NULL){
+    if(grid_result->grid!=NULL){
         grid_free(grid_result);
     }
-    grid_allocate(grid_result, grid_to_copy->size);
 
+    grid_allocate(grid_result, grid_to_copy->size);
 
     for (int i = 0; i != grid_to_copy->size; i++) {
         for (int j = 0; j != grid_to_copy->size; j++) {
@@ -366,7 +371,7 @@ t_grid *grid_solver(t_grid *g, const t_mode mode){
 
 t_grid *grid_solver2(t_grid *g, const t_mode mode){
     t_choice choice = grid_choice(g);
-    t_grid *copy = (t_grid *) malloc(sizeof(t_grid));
+    t_grid *copy = (t_grid *) calloc(1,sizeof(t_grid));
     grid_copy(g,copy);
     grid_choice_apply(copy,choice);
     bool consistent=solve(copy);
