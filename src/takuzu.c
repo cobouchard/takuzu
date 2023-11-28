@@ -13,7 +13,7 @@
 static struct Params parameters;
 
 int main2(char *argv[]){
-    t_grid *grid = (t_grid *) malloc(sizeof(t_grid));
+    t_grid *grid = (t_grid *) calloc(1,sizeof(t_grid));
     FILE *input_file;
     input_file = fopen(argv[1],"r");
     file_parser(grid,input_file,&parameters.N);
@@ -27,7 +27,7 @@ int main2(char *argv[]){
         errx(EXIT_SUCCESS,"the grid is solved just after heuristics\n");
     }
 
-    t_grid *result=(t_grid *)malloc(sizeof (t_grid));
+    t_grid *result=(t_grid *)calloc(1,sizeof (t_grid));
     result= grid_solver2(grid,MODE_FIRST);
     grid_print(result, stdout);
 

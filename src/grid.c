@@ -7,7 +7,7 @@
 
 
 void grid_allocate(t_grid *g, int size) {
-    g->grid = (char **) malloc(size * sizeof(char *));
+    g->grid = (char **) calloc(1,size * sizeof(char *));
     g->size = size;
     if (g->grid == NULL) {
         warnx("Fail in the allocation of grid in t_grid");
@@ -15,7 +15,7 @@ void grid_allocate(t_grid *g, int size) {
     }
 
     for (int i = 0; i < size; ++i) {
-        g->grid[i] = (char *) malloc(size * sizeof(char));
+        g->grid[i] = (char *) calloc(1,size * sizeof(char));
 
         if (g->grid[i] == NULL) {
             grid_free(g);
@@ -37,11 +37,13 @@ void grid_free(t_grid *g) {
     for (int i = 0; i < g->size; ++i) {
         if (g->grid[i] != NULL) {
             free(g->grid[i]);
+            g->grid[i]=NULL;
         }
     }
 
     if(g->grid!=NULL){
         free(g->grid);
+        g->grid=NULL;
     }
 
 }
@@ -345,7 +347,7 @@ t_choice grid_choice(t_grid *g){
  */
 t_grid *grid_solver(t_grid *g, const t_mode mode){
     t_choice choice = grid_choice(g);
-    t_grid *copy = (t_grid *) malloc(sizeof(t_grid));
+    t_grid *copy = (t_grid *) calloc(1,sizeof(t_grid));
     grid_copy(g,copy);
     grid_choice_apply(copy,choice);
     bool consistent=solve(copy);
@@ -382,7 +384,6 @@ t_grid *grid_solver2(t_grid *g, const t_mode mode){
     if(full && consistent){
         grid_free(g);
         free(g);
-        g=NULL;
         return copy;
     }
 
@@ -394,7 +395,6 @@ t_grid *grid_solver2(t_grid *g, const t_mode mode){
         grid_choice_apply(copy,choice); //and apply the new choice
         grid_free(g);
         free(g);
-        g=NULL;
         return grid_solver2(copy,mode);
     }
 
@@ -408,7 +408,6 @@ t_grid *grid_solver2(t_grid *g, const t_mode mode){
         if(mode==MODE_FIRST){
             grid_free(g);
             free(g);
-            g=NULL;
             return parcours;
         }
         else{
@@ -421,7 +420,5 @@ t_grid *grid_solver2(t_grid *g, const t_mode mode){
     choice.choice=other_char(choice.choice);
     grid_copy(g,copy); //we remove changes that were made
     grid_choice_apply(copy,choice); //and apply the new choice
-    grid_free(g);
-    free(g);
     return grid_solver2(copy,mode);
 }
