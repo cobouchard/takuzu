@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
     printf("%d\n",rand);
     srand(1701109528);
 
-    //main2(argv);
+    main2(argv);
 
     static struct option long_options[] =
             {
