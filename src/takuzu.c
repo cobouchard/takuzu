@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
 
         if(!is_full(grid)){
             //the grid haven't been solved only by the heuristics, we apply backtracking
-            grid= grid_solver2(grid,MODE_FIRST);
+            grid= grid_solver(grid, MODE_FIRST);
         } else{
             //the grid have been solved by the heuristics only
             //result=grid;

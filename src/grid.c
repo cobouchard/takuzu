@@ -337,39 +337,7 @@ t_choice grid_choice(t_grid *g){
     return choice;
 }
 
-/**
- * we suppose that heuristics have already applied before first entering the function
- * @param g
- * @param mode
- * @return
- */
 t_grid *grid_solver(t_grid *g, const t_mode mode){
-    t_choice choice = grid_choice(g);
-    t_grid *copy = (t_grid *) calloc(1,sizeof(t_grid));
-    grid_copy(g,copy);
-    grid_choice_apply(copy,choice);
-    bool consistent=solve(copy);
-
-    //if the grid is not consistent here, perhaps the choice was wrong
-    if(!consistent){
-        choice.choice=other_char(choice.choice);
-        grid_copy(g,copy);
-        grid_choice_apply(copy,choice);
-        grid_free(g);
-        free(g);
-        return grid_solver(copy,mode);
-    }
-
-    grid_free(g);
-    free(g);
-    if(is_full(copy)){
-        return copy;
-    }
-    //the grid is not complete
-    return grid_solver(copy,mode);
-}
-
-t_grid *grid_solver2(t_grid *g, const t_mode mode){
     t_choice choice = grid_choice(g);
     t_grid *copy = (t_grid *) malloc(sizeof(t_grid));
     grid_allocate(copy,g->size);
@@ -395,13 +363,13 @@ t_grid *grid_solver2(t_grid *g, const t_mode mode){
         grid_choice_apply(copy,choice); //and apply the new choice
         grid_free(g);
         free(g);
-        return grid_solver2(copy,mode);
+        return grid_solver(copy, mode);
     }
 
 
     //the grid is not full but consistent
     //the choice made, can be wrong or right, we keep exploring and we will backtrack if we are led on an inconsistent grid
-    t_grid *parcours = grid_solver2(copy,mode); //this should free copy
+    t_grid *parcours = grid_solver(copy, mode); //this should free copy
     if(is_consistent(parcours)){
 
         //the choice was correct, we return either the first solutions or all of them
@@ -427,5 +395,5 @@ t_grid *grid_solver2(t_grid *g, const t_mode mode){
     grid_choice_apply(copy2,choice); //and apply the new choice
     grid_free(g);
     free(g);
-    return grid_solver2(copy2,mode);
+    return grid_solver(copy2, mode);
 }

@@ -67,6 +67,4 @@ t_choice grid_choice(t_grid *g);
 
 t_grid *grid_solver(t_grid *g, const t_mode mode);
 
-t_grid *grid_solver2(t_grid *g, const t_mode mode);
-
 #endif 
