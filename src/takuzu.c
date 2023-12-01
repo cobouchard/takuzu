@@ -12,30 +12,6 @@
 
 static struct Params parameters;
 
-int main2(char *argv[]){
-    t_grid *grid = (t_grid *) calloc(1,sizeof(t_grid));
-    FILE *input_file;
-    input_file = fopen(argv[1],"r");
-    file_parser(grid,input_file,&parameters.N);
-    solve(grid);
-    if(!is_consistent(grid)){
-        grid_print(grid, stdout);
-        errx(EXIT_FAILURE,"the grid is not consistent just after heuristics\n");
-    }
-    if(is_full(grid)){
-        grid_print(grid, stdout);
-        errx(EXIT_SUCCESS,"the grid is solved just after heuristics\n");
-    }
-
-    t_grid *result=(t_grid *)calloc(1,sizeof (t_grid));
-    result= grid_solver2(grid,MODE_FIRST);
-    grid_print(result, stdout);
-
-    grid_free(result);
-    free(result);
-    fclose(input_file);
-    errx(EXIT_SUCCESS,"end of main2\n");
-}
 
 int main(int argc, char *argv[]) {
 
@@ -49,9 +25,8 @@ int main(int argc, char *argv[]) {
     int rand = time(NULL);
     srand(rand);
     printf("%d\n",rand);
-    srand(1701109528);
+    //srand(1701109528);
 
-    //main2(argv);
 
     static struct option long_options[] =
             {
