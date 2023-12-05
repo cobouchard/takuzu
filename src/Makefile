@@ -1,6 +1,6 @@
 CFLAGS = -std=c11 -Wall -Wextra -g -O2
-CPPFLAGS = -l../include -DDEBUG
-lDFLAGS = -lgetopt -lm
+CPPFLAGS = -I../include -DDEBUG
+LDFLAGS = -lm
 
 all: takuzu
 

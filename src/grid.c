@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "../include/grid.h"
+#include "../include/takuzu.h"
 #include "../include/heuristics.h"
 
 
@@ -337,7 +338,40 @@ t_choice grid_choice(t_grid *g){
     return choice;
 }
 
+void print_solution(t_grid *g){
+    if(g==NULL){
+        return;
+    }
+    parameters.number_solutions+=1;
+
+    FILE *output_file;
+    if (parameters.output == NULL) {
+        output_file=stdout;
+    } else {
+        output_file = fopen(parameters.output, "w+");
+        if(output_file==NULL){
+            errx(EXIT_FAILURE,"Couldn't open output file %s\n",parameters.output);
+        }
+    }
+
+    printf("Solution %d\nGrid for solution %d\n",parameters.number_solutions,parameters.number_solutions);
+    grid_print(g,output_file);
+
+    if(output_file!=NULL){
+        fclose(output_file);
+    }
+}
+
 t_grid *grid_solver(t_grid *g, const t_mode mode){
+    if(mode==MODE_FIRST){
+        return grid_solver_first(g);
+    }
+    else{
+        return grid_solver_all(g);
+    }
+}
+
+t_grid *grid_solver_first(t_grid *g){
     t_choice choice = grid_choice(g);
     t_grid *copy = (t_grid *) malloc(sizeof(t_grid));
     grid_allocate(copy,g->size);
@@ -355,6 +389,8 @@ t_grid *grid_solver(t_grid *g, const t_mode mode){
         return copy;
     }
 
+
+
     //the grid is not consistent :
     //the choice was wrong, we go explore the other choice
     if(!consistent){
@@ -363,24 +399,22 @@ t_grid *grid_solver(t_grid *g, const t_mode mode){
         grid_choice_apply(copy,choice); //and apply the new choice
         grid_free(g);
         free(g);
-        return grid_solver(copy, mode);
+        return grid_solver_first(copy);
     }
+
 
 
     //the grid is not full but consistent
     //the choice made, can be wrong or right, we keep exploring and we will backtrack if we are led on an inconsistent grid
-    t_grid *parcours = grid_solver(copy, mode); //this should free copy
+    t_grid *parcours = grid_solver_first(copy); //this should free copy
     if(is_consistent(parcours)){
 
-        //the choice was correct, we return either the first solutions or all of them
-        if(mode==MODE_FIRST){
-            grid_free(g);
-            free(g);
-            return parcours;
-        }
-        else{
-            return NULL; // #TODO return all solutions
-        }
+        //the choice was correct, we return the first solution
+
+        grid_free(g);
+        free(g);
+        return parcours;
+
     }
     grid_free(parcours);
     free(parcours);
@@ -395,5 +429,57 @@ t_grid *grid_solver(t_grid *g, const t_mode mode){
     grid_choice_apply(copy2,choice); //and apply the new choice
     grid_free(g);
     free(g);
-    return grid_solver(copy2, mode);
+    return grid_solver_first(copy2);
+}
+
+void *grid_solver_all(t_grid *g){
+    t_choice choice1 = grid_choice(g);
+    t_choice choice2; choice2.choice=other_char(choice1.choice);
+
+    t_grid *copy1 = (t_grid *) malloc(sizeof(t_grid));
+    t_grid *copy2 = (t_grid *) malloc(sizeof(t_grid));
+
+    grid_allocate(copy1,g->size);
+    grid_allocate(copy2,g->size);
+
+    grid_copy(g,copy1);
+    grid_copy(g,copy2);
+
+    grid_choice_apply(copy1,choice1);
+    grid_choice_apply(copy2,choice2);
+
+    printf("\n");
+    grid_print(copy1,stdout);
+    printf("\n");
+    grid_print(copy2,stdout);
+
+    bool consistent1=solve(copy1);
+    bool full1= is_full(copy1);
+
+    bool consistent2=solve(copy2);
+    bool full2=is_full(copy2);
+
+
+
+    if(full1&&consistent1){
+        print_solution(copy1);
+        grid_free(copy1);
+        free(copy1);
+    }
+    else if(consistent1){
+        grid_solver_all(copy1);
+    }
+
+    if(full2&&consistent2){
+        print_solution(copy2);
+        grid_free(copy2);
+        free(copy2);
+    }
+    else if(consistent2){
+        grid_solver_all(copy2);
+    }
+
+    grid_free(g);
+    free(g);
+    return NULL;
 }

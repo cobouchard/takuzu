@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+
+
 #define set_bit(number, place) (number = number | (UINT64_C(1)<<place))
 #define mask_nbits(size) ( (size==64) ? UINT64_MAX : UINT64_MAX >> (64-size))
 #define different(a, b) ( (uint64_t )(a | b) != (uint64_t )mask_nbits(g->size))
@@ -66,5 +68,11 @@ void grid_choice_print(const t_choice choice, FILE *fd);
 t_choice grid_choice(t_grid *g);
 
 t_grid *grid_solver(t_grid *g, const t_mode mode);
+
+void *grid_solver_all(t_grid *g);
+
+t_grid *grid_solver_first(t_grid *g);
+
+void print_solution(t_grid *g);
 
 #endif 

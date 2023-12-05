@@ -10,11 +10,7 @@
 #include "../include/parser.h"
 
 
-static struct Params parameters;
-
-
 int main(int argc, char *argv[]) {
-
 
     //initialise to defaults values
     parameters.verbose_flag = DEFAULT_VERBOSE;
@@ -22,6 +18,7 @@ int main(int argc, char *argv[]) {
     parameters.N = DEFAULT_N;
     parameters.all = DEFAULT_ALL;
     parameters.unique = DEFAULT_UNIQUE;
+    parameters.number_solutions = 0;
     int rand = time(NULL);
     srand(rand);
     printf("%d\n",rand);
@@ -145,17 +142,23 @@ int main(int argc, char *argv[]) {
             }
             else{
                 //the grid haven't been solved only by the heuristics, we apply backtracking
-                grid= grid_solver(grid, MODE_FIRST);
+                grid= grid_solver(grid, parameters.all);
             }
         }
 
-        if(is_valid(grid)){
-            printf("The grid has been solved !\n");
+        if(parameters.all==MODE_FIRST){
+            if(is_valid(grid)){
+                printf("The grid has been solved !\n");
+            }
+            else{
+                printf("The grid hasn't been solved entirely or cannot be solved.\n");
+            }
+            grid_print(grid,output_file);
         }
         else{
-            printf("The grid hasn't been solved entirely or cannot be solved.\n");
+            printf("Numbers of solution: %d\n", parameters.number_solutions);
         }
-        grid_print(grid,output_file);
+
         grid_free(grid);
         free(grid);
         fclose(input_file);

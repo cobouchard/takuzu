@@ -17,7 +17,10 @@ struct Params {
     t_mode all;
     int N;
     char *output;
+    int number_solutions;
 };
+
+static struct Params parameters;
 
 void print_help();
 
