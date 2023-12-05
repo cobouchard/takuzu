@@ -20,7 +20,7 @@ struct Params {
     int number_solutions;
 };
 
-static struct Params parameters;
+extern struct Params parameters;
 
 void print_help();
 

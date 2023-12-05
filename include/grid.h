@@ -73,6 +73,6 @@ void *grid_solver_all(t_grid *g);
 
 t_grid *grid_solver_first(t_grid *g);
 
-void print_solution(t_grid *g);
+void print_solution(t_grid *g, bool final);
 
 #endif 

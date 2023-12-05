@@ -338,26 +338,26 @@ t_choice grid_choice(t_grid *g){
     return choice;
 }
 
-void print_solution(t_grid *g){
-    if(g==NULL){
-        return;
-    }
-    parameters.number_solutions+=1;
-
+void print_solution(t_grid *g, bool final){
     FILE *output_file;
     if (parameters.output == NULL) {
         output_file=stdout;
     } else {
-        output_file = fopen(parameters.output, "w+");
+        output_file = fopen(parameters.output, "a+");
         if(output_file==NULL){
             errx(EXIT_FAILURE,"Couldn't open output file %s\n",parameters.output);
         }
     }
+    if(final){
+        fprintf(output_file,"Number of solutions: %d\n",parameters.number_solutions);
+    }
+    else{
+        parameters.number_solutions+=1;
+        fprintf(output_file,"Solution %d\nGrid for solution %d\n",parameters.number_solutions,parameters.number_solutions);
+        grid_print(g,output_file);
+    }
 
-    printf("Solution %d\nGrid for solution %d\n",parameters.number_solutions,parameters.number_solutions);
-    grid_print(g,output_file);
-
-    if(output_file!=NULL){
+    if(output_file!=NULL && output_file!=stdout){
         fclose(output_file);
     }
 }
@@ -434,7 +434,10 @@ t_grid *grid_solver_first(t_grid *g){
 
 void *grid_solver_all(t_grid *g){
     t_choice choice1 = grid_choice(g);
-    t_choice choice2; choice2.choice=other_char(choice1.choice);
+    t_choice choice2;
+    choice2.choice=other_char(choice1.choice);
+    choice2.column=choice1.column;
+    choice2.row= choice1.row;
 
     t_grid *copy1 = (t_grid *) malloc(sizeof(t_grid));
     t_grid *copy2 = (t_grid *) malloc(sizeof(t_grid));
@@ -448,35 +451,32 @@ void *grid_solver_all(t_grid *g){
     grid_choice_apply(copy1,choice1);
     grid_choice_apply(copy2,choice2);
 
-    printf("\n");
-    grid_print(copy1,stdout);
-    printf("\n");
-    grid_print(copy2,stdout);
-
     bool consistent1=solve(copy1);
     bool full1= is_full(copy1);
 
     bool consistent2=solve(copy2);
     bool full2=is_full(copy2);
 
-
-
-    if(full1&&consistent1){
-        print_solution(copy1);
-        grid_free(copy1);
-        free(copy1);
+    if(consistent1){
+        if(full1){
+            print_solution(copy1,false);
+            grid_free(copy1);
+            free(copy1);
+        }
+        else{
+            grid_solver_all(copy1);
+        }
     }
-    else if(consistent1){
-        grid_solver_all(copy1);
-    }
 
-    if(full2&&consistent2){
-        print_solution(copy2);
-        grid_free(copy2);
-        free(copy2);
-    }
-    else if(consistent2){
-        grid_solver_all(copy2);
+    if(consistent2){
+        if(full2){
+            print_solution(copy2,false);
+            grid_free(copy2);
+            free(copy2);
+        }
+        else{
+            grid_solver_all(copy2);
+        }
     }
 
     grid_free(g);

@@ -9,20 +9,23 @@
 #include "../include/takuzu.h"
 #include "../include/parser.h"
 
+struct Params parameters = {
+        .verbose_flag = DEFAULT_VERBOSE,
+        .solver_mode = DEFAULT_SOLVER_MODE,
+        .unique = DEFAULT_UNIQUE,
+        .all = DEFAULT_ALL,
+        .N = DEFAULT_N,
+        .output = NULL,
+        .number_solutions = 0
+};
 
 int main(int argc, char *argv[]) {
 
     //initialise to defaults values
-    parameters.verbose_flag = DEFAULT_VERBOSE;
-    parameters.solver_mode = DEFAULT_SOLVER_MODE;
-    parameters.N = DEFAULT_N;
-    parameters.all = DEFAULT_ALL;
-    parameters.unique = DEFAULT_UNIQUE;
-    parameters.number_solutions = 0;
     int rand = time(NULL);
     srand(rand);
     printf("%d\n",rand);
-    //srand(1701109528);
+    srand(1701797360);
 
 
     static struct option long_options[] =
@@ -154,9 +157,8 @@ int main(int argc, char *argv[]) {
                 printf("The grid hasn't been solved entirely or cannot be solved.\n");
             }
             grid_print(grid,output_file);
-        }
-        else{
-            printf("Numbers of solution: %d\n", parameters.number_solutions);
+        }else{
+            print_solution(NULL,true);
         }
 
         grid_free(grid);
