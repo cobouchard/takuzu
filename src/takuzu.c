@@ -139,14 +139,14 @@ int main(int argc, char *argv[]) {
             errx(EXIT_FAILURE,"grid cannot be solved, not consistent after heuristics");
         }
 
-
-
         if(!is_full(grid)){
-            //the grid haven't been solved only by the heuristics, we apply backtracking
-            grid= grid_solver(grid, MODE_FIRST);
-        } else{
-            //the grid have been solved by the heuristics only
-            //result=grid;
+            if(grid->size>=32){
+                printf("Backtracking not working for sizes 32 and 64, applying heuristics only\n");
+            }
+            else{
+                //the grid haven't been solved only by the heuristics, we apply backtracking
+                grid= grid_solver(grid, MODE_FIRST);
+            }
         }
 
         if(is_valid(grid)){
