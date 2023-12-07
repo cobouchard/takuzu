@@ -35,17 +35,19 @@ void grid_free(t_grid *g) {
     if (g == NULL) {
         return;
     }
+
     for (int i = 0; i < g->size; ++i) {
         if (g->grid[i] != NULL) {
             free(g->grid[i]);
-            g->grid[i]=NULL;
+            g->grid[i] = NULL;
         }
     }
+    free(g->grid);
+    g->grid = NULL;
+
+
     g->size=0;
-    if(g->grid!=NULL){
-        free(g->grid);
-        g->grid=NULL;
-    }
+
 
 }
 
@@ -275,7 +277,27 @@ void generate_grid(int size, t_grid *g){
     if(g==NULL){
         errx(EXIT_FAILURE, "trying to generate a grid on an empty pointer\n");
     }
+    generate_rand_grid(size,g);
 
+    if(size<=16){
+        //we try solving the grid, if there are no solutions, we generate an other grid
+        t_grid *copy = (t_grid *) malloc(sizeof(t_grid));
+        grid_allocate(copy,size);
+        grid_copy(g,copy);
+        copy= grid_solver_first(copy);
+
+        bool valid = is_valid(copy);
+        grid_free(copy);
+        free(copy);
+        if(!valid){
+            grid_free(g);
+            generate_grid(size,g);
+        }
+    }
+
+}
+
+void generate_rand_grid(int size, t_grid *g){
     grid_allocate(g,size);
     int set_number = percentage*size*size/100;
     int tries = set_number*100000;
@@ -301,7 +323,6 @@ void generate_grid(int size, t_grid *g){
         set_number--;
         tries--;
     }
-
 }
 
 bool solve(t_grid *g){

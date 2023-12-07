@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     int rand = time(NULL);
     srand(rand);
     printf("%d\n",rand);
-    srand(1701797360);
+    //srand(1701910232);
 
 
     static struct option long_options[] =
@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
                 printf("Backtracking not working for sizes 32 and 64, applying heuristics only\n");
             }
             else{
-                //the grid haven't been solved only by the heuristics, we apply backtracking
+                //the grid haven't been solved on   ly by the heuristics, we apply backtracking
                 grid= grid_solver(grid, parameters.all);
             }
         }

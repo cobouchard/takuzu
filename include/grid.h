@@ -59,6 +59,8 @@ bool fill_line(int line, t_grid *g, char c, int count);
 
 void generate_grid(int size, t_grid *g);
 
+void generate_rand_grid(int size, t_grid *g);
+
 bool solve(t_grid *g);
 
 void grid_choice_apply(t_grid *g,const t_choice choice);
