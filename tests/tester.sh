@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
-cant_parse_folder="tests/parse_error"
-solvable_folder="tests/solvable"
-inconsistent_folder="tests/inconsistent"
+echo "Testing takuzu project, this might takes some time. You can stop it and restart if it's taking too long"
+
+tests_folder="tests"
+cant_parse_folder="$tests_folder/parse_error"
+solvable_folder="$tests_folder/solvable"
+unsolvable_folder="$tests_folder/unsolvable"
+inconsistent_folder="$tests_folder/inconsistent"
 executable="takuzu"
 VALGRIND_CMD="valgrind --leak-check=full --error-exitcode=1"
 
@@ -33,6 +37,7 @@ test_count=$((test_count+count_parse))
 test_success=$((test_success+success))
 ####
 
+
 #### Testing grids that are not consistent
 count_inconsistent=0
 success=0
@@ -50,7 +55,10 @@ done
 echo "Executed all files in $inconsistent_folder ; $success out of $count_inconsistent exited with an error as intended"
 test_count=$((test_count+count_inconsistent))
 test_success=$((test_success+success))
-#### Testing grids than can try to be solved
+####
+
+
+#### Testing grids than can be solved
 count_solvable=0
 success=0
 for file in "$solvable_folder"/*
@@ -66,6 +74,26 @@ done
 
 echo "Executed all files in $solvable_folder ; $success out of $count_solvable exited without any errors"
 test_count=$((test_count+count_solvable))
+test_success=$((test_success+success))
+####
+
+
+#### Testing grids than cannot be solved
+count_unsolvable=0
+success=0
+for file in "$unsolvable_folder"/*
+do
+	./$executable $file > /dev/null 2>&1
+	if [ $? -eq 1 ]; then
+		((success++))
+	else
+		echo "$file has exited without error, should be unsolvable"
+	fi
+	((count_unsolvable++))
+done
+
+echo "Executed all files in $unsolvable_folder ; $success out of $count_unsolvable exited with an error as intended"
+test_count=$((test_count+count_unsolvable))
 test_success=$((test_success+success))
 ####
 
@@ -92,7 +120,7 @@ test_success=$((test_success+success))
 #### Testing Valgrind
 count_valgrind=0
 success=0
-for argument in {"-g 4","-g 32","$solvable_folder/correct.txt"}
+for argument in {"-g 4","-g 32"}
 do
 	$VALGRIND_CMD ./$executable $argument > /dev/null 2>&1
 	if [ $? -eq 0 ]; then

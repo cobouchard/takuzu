@@ -460,6 +460,7 @@ void *grid_solver_all(t_grid *g){
     choice2.column=choice1.column;
     choice2.row= choice1.row;
 
+
     t_grid *copy1 = (t_grid *) malloc(sizeof(t_grid));
     t_grid *copy2 = (t_grid *) malloc(sizeof(t_grid));
 
@@ -477,6 +478,8 @@ void *grid_solver_all(t_grid *g){
 
     bool consistent2=solve(copy2);
     bool full2=is_full(copy2);
+
+
 
     if(consistent1){
         if(full1){

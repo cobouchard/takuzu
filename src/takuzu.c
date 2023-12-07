@@ -154,10 +154,13 @@ int main(int argc, char *argv[]) {
                 printf("The grid has been solved !\n");
             }
             else{
-                printf("The grid hasn't been solved entirely or cannot be solved.\n");
+                errx(EXIT_FAILURE,"The grid hasn't been solved entirely or cannot be solved.\n");
             }
             grid_print(grid,output_file);
         }else{
+            if(grid!=NULL){
+                print_solution(grid,false);
+            }
             print_solution(NULL,true);
         }
 
