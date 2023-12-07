@@ -123,7 +123,7 @@ test_success=$((test_success+success))
 #### Testing Valgrind
 count_valgrind=0
 success=0
-for argument in "-g 4" "-g 32" "-g 8 -o $generated_folder/generated1.txt" "-a $solvable_folder/severalsolutions.txt" "$cant_parse_folder/size5.txt" "$inconsistent_folder/identical_lines.txt" "$unsolvable_folder/nosolution.txt" "$generated_folder/generated1"
+for argument in "-g 4" "-g 32" "-g 8 -o $generated_folder/generated1.txt" "-a $solvable_folder/severalsolutions.txt" "$cant_parse_folder/size5.txt" "$inconsistent_folder/identical_lines.txt" "$unsolvable_folder/nosolution.txt" "$generated_folder/generated1" "-h" "-a -u" "anything --nothing"
 do
 	$VALGRIND_CMD ./$executable $argument > /dev/null 2>&1
 	if [ $? -ne 7 ]; then
@@ -137,7 +137,6 @@ done
 test_count=$((test_count+count_valgrind))
 test_success=$((test_success+success))
 echo "Valgrind tested arguments for $executable, $success out of $count_valgrind didn't have any memory leaks"
-echo "INCOMPLETE TESTING HERE"
 
 echo ""
 echo "$test_success / $test_count tests passed correctly"
