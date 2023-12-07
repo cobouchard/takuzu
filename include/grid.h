@@ -6,7 +6,6 @@
 #include <stdbool.h>
 
 
-
 #define set_bit(number, place) (number = number | (UINT64_C(1)<<place))
 #define mask_nbits(size) ( (size==64) ? UINT64_MAX : UINT64_MAX >> (64-size))
 #define different(a, b) ( (uint64_t )(a | b) != (uint64_t )mask_nbits(g->size))
@@ -25,7 +24,9 @@ typedef struct {
     char choice;
 } t_choice;
 
-typedef enum{MODE_FIRST,MODE_ALL} t_mode;
+typedef enum {
+    MODE_FIRST, MODE_ALL
+} t_mode;
 
 void grid_allocate(t_grid *g, int size);
 
@@ -63,7 +64,7 @@ void generate_rand_grid(int size, t_grid *g);
 
 bool solve(t_grid *g);
 
-void grid_choice_apply(t_grid *g,const t_choice choice);
+void grid_choice_apply(t_grid *g, const t_choice choice);
 
 void grid_choice_print(const t_choice choice, FILE *fd);
 

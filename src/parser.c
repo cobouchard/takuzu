@@ -19,21 +19,27 @@ void file_parser(t_grid *grid, FILE *file, int *parameters_size) {
     char buffer[MAX_BUFFER];
 
     int current_line = 0;
-    int temp_size=0;
+    int temp_size = 0;
     char *first_line = (char *) calloc(MAX_BUFFER, sizeof(char));
 
     //let's read the first line, find the size of the grid and allocate the grid to store the data parsed
 
     do {
         if (fgets(buffer, MAX_BUFFER, file) != NULL) {
-            readLine(buffer, MAX_GRID_SIZE, current_line, first_line,&temp_size);
+            readLine(buffer, MAX_GRID_SIZE, current_line, first_line, &temp_size);
         } else {
+            free(first_line);
+            free(grid);
+            fclose(file);
             errx(EXIT_FAILURE, "File is empty !");
         }
     } while (temp_size == 0);
 
     temp_size = checkArgGeneratorInt(temp_size);
     if (temp_size == -1) {
+        free(first_line);
+        free(grid);
+        fclose(file);
         errx(EXIT_FAILURE, "Incorrect number of significant characters, grid size must be 4, 8, 16, 32 or 64.\n");
     }
 
@@ -48,12 +54,16 @@ void file_parser(t_grid *grid, FILE *file, int *parameters_size) {
 
     //we will now check that the next lines are the same size as the first one and finish the parsing of the file
     char *line = (char *) calloc(grid->size, sizeof(char));
-    if(line==NULL){
+    if (line == NULL) {
+        free(line);
+        grid_free(grid);
+        free(grid);
+        fclose(file);
         errx(EXIT_FAILURE, "Failed to allocated line in parser\n");
     }
     while (fgets(buffer, MAX_BUFFER, file) != NULL) {
-        int current_size=0;
-        readLine(buffer, *parameters_size, current_line, line,&current_size);
+        int current_size = 0;
+        readLine(buffer, *parameters_size, current_line, line, &current_size);
         //there are no significant characters, empty line or commented line
         if (current_size == 0) {
             //we go to the next line
@@ -62,6 +72,9 @@ void file_parser(t_grid *grid, FILE *file, int *parameters_size) {
 
         if (current_size != *parameters_size) {
             free(line);
+            grid_free(grid);
+            free(grid);
+            fclose(file);
             errx(EXIT_FAILURE,
                  "Incorrect number of significant characters '%d' in line '%d'; %d was expected as in the first uncommented line.\n",
                  current_size, current_line + 1, *parameters_size);
@@ -75,6 +88,9 @@ void file_parser(t_grid *grid, FILE *file, int *parameters_size) {
 
     if (current_line != *parameters_size) {
         free(line);
+        grid_free(grid);
+        free(grid);
+        fclose(file);
         errx(EXIT_FAILURE, "Incorrect number of lines, %d lines found.", current_line);
     }
 
@@ -112,7 +128,7 @@ void readLine(char *line, int size, int current_line, char *line_to_return, int 
 
                 line_to_return[current_index] = current_char;
                 current_index++;
-                *count_char+=1;
+                *count_char += 1;
             } else {
                 errx(EXIT_FAILURE,
                      "Unexpected character '%c' at line %d, column %d, a significant character was expected.\n",

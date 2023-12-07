@@ -2,7 +2,8 @@ all:
 	@make -C src
 	@cp src/takuzu .
 
-clean: 
+clean:
+	@rm tests/generated/*
 	@rm -f src/*.o takuzu src/takuzu
 test:
 	@cd tests

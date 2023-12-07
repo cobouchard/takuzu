@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 
-echo "Testing takuzu project, this might takes some time. You can stop it and restart if it's taking too long"
+echo "Testing takuzu project, this might takes some time (~30-60s)." 
+echo "You can stop it and restart if it's taking too long"
+echo ""
 
 tests_folder="tests"
 cant_parse_folder="$tests_folder/parse_error"
 solvable_folder="$tests_folder/solvable"
 unsolvable_folder="$tests_folder/unsolvable"
 inconsistent_folder="$tests_folder/inconsistent"
+generated_folder="$tests_folder/generated"
 executable="takuzu"
-VALGRIND_CMD="valgrind --leak-check=full --error-exitcode=1"
+VALGRIND_CMD="valgrind --leak-check=full --error-exitcode=7"
 
 if [ "$(basename "$(pwd)")" != "takuzu" ]; then
 	echo "This script has to be executed from the root folder of the project."
@@ -120,10 +123,10 @@ test_success=$((test_success+success))
 #### Testing Valgrind
 count_valgrind=0
 success=0
-for argument in {"-g 4","-g 32"}
+for argument in "-g 4" "-g 32" "-g 8 -o $generated_folder/generated1.txt" "-a $solvable_folder/severalsolutions.txt" "$cant_parse_folder/size5.txt" "$inconsistent_folder/identical_lines.txt" "$unsolvable_folder/nosolution.txt" "$generated_folder/generated1"
 do
 	$VALGRIND_CMD ./$executable $argument > /dev/null 2>&1
-	if [ $? -eq 0 ]; then
+	if [ $? -ne 7 ]; then
 		((success++))
 	else
 		echo "Valgrind found memory leaks executing $VALGRIND_CMD ./$executable $argument"

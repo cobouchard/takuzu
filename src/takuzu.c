@@ -24,8 +24,8 @@ int main(int argc, char *argv[]) {
     //initialise to defaults values
     int rand = time(NULL);
     srand(rand);
-    printf("%d\n",rand);
-    //srand(1701910232);
+    printf("%d\n", rand);
+    srand(1701910232);
 
 
     static struct option long_options[] =
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
                 parameters.all = MODE_ALL;
                 break;
             case 'g':
-                if (parameters.all==MODE_ALL) {
+                if (parameters.all == MODE_ALL) {
                     warnx("mode \"generator\" incompatible with option \"all\" ");
                     exit(EXIT_FAILURE);
                 }
@@ -117,83 +117,79 @@ int main(int argc, char *argv[]) {
 
         printf("opening the grid from \"%s\" file\n", input);
         t_grid *grid = (t_grid *) malloc(sizeof(t_grid));
-        file_parser(grid,input_file,&parameters.N);
+        file_parser(grid, input_file, &parameters.N);
 
         if (parameters.output == NULL) {
-            output_file=stdout;
+            output_file = stdout;
         } else {
             output_file = fopen(parameters.output, "w+");
-            if(output_file==NULL){
-                errx(EXIT_FAILURE,"Couldn't open output file %s\n",parameters.output);
+            if (output_file == NULL) {
+                errx(EXIT_FAILURE, "Couldn't open output file %s\n", parameters.output);
             }
         }
 
-        if(!is_consistent(grid)){
+        if (!is_consistent(grid)) {
             //if the grid is not consistent, we wont try to solve it and exit with an error
             errx(EXIT_FAILURE, "The grid given in input is not consistent.\n");
         }
 
-        if(!solve(grid)){
+        if (!solve(grid)) {
             //the grid is not consistent after only application of heuristics, it's an impossible grid
-            grid_print(grid,stdout);
-            errx(EXIT_FAILURE,"grid cannot be solved, not consistent after heuristics");
+            grid_print(grid, stdout);
+            errx(EXIT_FAILURE, "grid cannot be solved, not consistent after heuristics");
         }
 
-        if(!is_full(grid)){
-            if(grid->size>=32){
+        if (!is_full(grid)) {
+            if (grid->size >= 32) {
                 printf("Backtracking not working for sizes 32 and 64, applying heuristics only\n");
-            }
-            else{
+            } else {
                 //the grid haven't been solved on   ly by the heuristics, we apply backtracking
-                grid= grid_solver(grid, parameters.all);
+                grid = grid_solver(grid, parameters.all);
             }
         }
 
-        if(parameters.all==MODE_FIRST){
-            if(is_valid(grid)){
+        if (parameters.all == MODE_FIRST) {
+            if (is_valid(grid)) {
                 printf("The grid has been solved !\n");
+            } else {
+                errx(EXIT_FAILURE, "The grid hasn't been solved entirely or cannot be solved.\n");
             }
-            else{
-                errx(EXIT_FAILURE,"The grid hasn't been solved entirely or cannot be solved.\n");
+            grid_print(grid, output_file);
+        } else {
+            if (grid != NULL) {
+                print_solution(grid, false);
             }
-            grid_print(grid,output_file);
-        }else{
-            if(grid!=NULL){
-                print_solution(grid,false);
-            }
-            print_solution(NULL,true);
+            print_solution(NULL, true);
         }
 
         grid_free(grid);
         free(grid);
         fclose(input_file);
-        if(output_file!=stdout){
+        if (output_file != stdout) {
             fclose(output_file);
         }
 
     } else if (argv[optind] != NULL) {
         errx(EXIT_FAILURE, "too many arguments for generator mode, no file needed");
-    }
-    else{ //generator mode
+    } else { //generator mode
         t_grid *generated = (t_grid *) malloc(sizeof(t_grid));
-        generate_grid(parameters.N,generated);
-        if(!is_consistent(generated)){
+        generate_grid(parameters.N, generated);
+        if (!is_consistent(generated)) {
             grid_free(generated);
             free(generated);
-            errx(EXIT_FAILURE,"The generated grid is not consistent\n");
+            errx(EXIT_FAILURE, "The generated grid is not consistent\n");
         }
-        if(parameters.output==NULL){
-            grid_print(generated,stdout);
-        }
-        else{
+        if (parameters.output == NULL) {
+            grid_print(generated, stdout);
+        } else {
             FILE *file;
             file = fopen(parameters.output, "w+");
-            if(file==NULL){
+            if (file == NULL) {
                 grid_free(generated);
                 free(generated);
-                errx(EXIT_FAILURE, "Couldn't open file %s to write the output of generator\n",parameters.output);
+                errx(EXIT_FAILURE, "Couldn't open file %s to write the output of generator\n", parameters.output);
             }
-            grid_print(generated,file);
+            grid_print(generated, file);
         }
 
         grid_free(generated);

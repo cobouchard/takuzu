@@ -17,5 +17,4 @@ void file_parser(t_grid *grid, FILE *filename, int *parameters_size);
 void readLine(char *line, int size, int current_line, char *line_to_return, int *count_char);
 
 
-
-#endif 
+#endif
