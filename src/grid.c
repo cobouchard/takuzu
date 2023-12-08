@@ -485,6 +485,10 @@ void *grid_solver_all(t_grid *g) {
             grid_solver_all(copy1);
         }
     }
+    else{
+        grid_free(copy1);
+        free(copy1);
+    }
 
     if (consistent2) {
         if (full2) {
@@ -495,6 +499,10 @@ void *grid_solver_all(t_grid *g) {
         } else {
             grid_solver_all(copy2);
         }
+    }
+    else{
+        grid_free(copy2);
+        free(copy2);
     }
 
     grid_free(g);
