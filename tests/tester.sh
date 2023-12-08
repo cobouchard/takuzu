@@ -61,26 +61,6 @@ test_success=$((test_success+success))
 ####
 
 
-#### Testing grids than can be solved
-count_solvable=0
-success=0
-for file in "$solvable_folder"/*
-do
-	./$executable $file > /dev/null 2>&1
-	if [ $? -eq 0 ]; then
-		((success++))
-	else
-		echo "$file has exited with an error"
-	fi
-	((count_solvable++))
-done
-
-echo "Executed all files in $solvable_folder ; $success out of $count_solvable exited without any errors"
-test_count=$((test_count+count_solvable))
-test_success=$((test_success+success))
-####
-
-
 #### Testing grids than cannot be solved
 count_unsolvable=0
 success=0
@@ -101,6 +81,27 @@ test_success=$((test_success+success))
 ####
 
 
+#### Testing grids than can be solved
+count_solvable=0
+success=0
+for file in "$solvable_folder"/*
+do
+	./$executable $file > /dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		((success++))
+	else
+		echo "$file has exited with an error"
+	fi
+	((count_solvable++))
+done
+
+echo "Executed all files in $solvable_folder ; $success out of $count_solvable exited without any errors"
+test_count=$((test_count+count_solvable))
+test_success=$((test_success+success))
+####
+
+
+
 #### Testing generator
 count_generator=0
 success=0
@@ -114,7 +115,7 @@ do
 	fi
 	((count_generator++))
 done
-echo "Generated grids for N = 4,8,16,32,64 ; $success out of $count_generator has exited without any errors"
+echo "Generated grids for N = 4,8,16,32,64 ; $success out of $count_generator exited without any errors"
 test_count=$((test_count+count_generator))
 test_success=$((test_success+success))
 ####
@@ -123,7 +124,7 @@ test_success=$((test_success+success))
 #### Testing Valgrind
 count_valgrind=0
 success=0
-for argument in "-g 4" "-g 32" "-g 8 -o $generated_folder/generated1.txt" "-a $solvable_folder/severalsolutions.txt" "$cant_parse_folder/size5.txt" "$inconsistent_folder/identical_lines.txt" "$unsolvable_folder/nosolution.txt" "$generated_folder/generated1" "-h" "-a -u" "anything --nothing"
+for argument in "-g 4" "-g 32" "-g 8 -o $generated_folder/generated1.txt" "$solvable_folder/size16.txt" "-a $solvable_folder/severalsolutions.txt" "$cant_parse_folder/size5.txt" "$inconsistent_folder/identical_lines.txt" "$unsolvable_folder/nosolution.txt" "$generated_folder/generated1" "-h" "-a -u" "anything --nothing"
 do
 	$VALGRIND_CMD ./$executable $argument > /dev/null 2>&1
 	if [ $? -ne 7 ]; then
@@ -136,7 +137,7 @@ done
 
 test_count=$((test_count+count_valgrind))
 test_success=$((test_success+success))
-echo "Valgrind tested arguments for $executable, $success out of $count_valgrind didn't have any memory leaks"
+echo "Valgrind tested arguments for $executable ; $success out of $count_valgrind without any memory leaks"
 
 echo ""
 echo "$test_success / $test_count tests passed correctly"
