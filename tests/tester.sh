@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-echo "Testing takuzu project, this might takes some time (~30-60s)." 
-echo "You can stop it and restart if it's taking too long"
-echo ""
-
 tests_folder="tests"
 cant_parse_folder="$tests_folder/parse_error"
 solvable_folder="$tests_folder/solvable"
@@ -12,6 +8,18 @@ inconsistent_folder="$tests_folder/inconsistent"
 generated_folder="$tests_folder/generated"
 executable="takuzu"
 VALGRIND_CMD="valgrind --leak-check=full --error-exitcode=7"
+
+if [ ! -f $executable ]; then
+	echo "$executable executable not found, please use make before"
+	exit 1
+fi
+
+
+echo "Testing takuzu project, this might takes some time (~30-60s)." 
+echo "You can stop it and restart if it's taking too long"
+echo ""
+
+
 
 if [ "$(basename "$(pwd)")" != "takuzu" ]; then
 	echo "This script has to be executed from the root folder of the project."
@@ -81,6 +89,32 @@ test_success=$((test_success+success))
 ####
 
 
+
+#### Testing generator
+count_generator=0
+success=0
+for i in {4,8,16,32,64}
+do
+	if [ $i -le "9" ]; then
+		./$executable -g $i -o "$solvable_folder/generated$i" > /dev/null 2>&1
+	else
+		./$executable -g $i > /dev/null 2>&1
+	fi
+
+	
+	if [ $? -eq 0 ]; then
+		((success++))
+	else
+		echo "Generating grid for N=$i has exited with an error"
+	fi
+	((count_generator++))
+done
+echo "Generated grids for N = 4,8,16,32,64 ; $success out of $count_generator exited without any errors"
+test_count=$((test_count+count_generator))
+test_success=$((test_success+success))
+####
+
+
 #### Testing grids than can be solved
 count_solvable=0
 success=0
@@ -101,30 +135,10 @@ test_success=$((test_success+success))
 ####
 
 
-
-#### Testing generator
-count_generator=0
-success=0
-for i in {4,8,16,32,64}
-do
-	./$executable -g $i > /dev/null 2>&1
-	if [ $? -eq 0 ]; then
-		((success++))
-	else
-		echo "Generating grid for N=$i has exited with an error"
-	fi
-	((count_generator++))
-done
-echo "Generated grids for N = 4,8,16,32,64 ; $success out of $count_generator exited without any errors"
-test_count=$((test_count+count_generator))
-test_success=$((test_success+success))
-####
-
-
 #### Testing Valgrind
 count_valgrind=0
 success=0
-for argument in "-g 4" "-g 32" "-g 8 -o $generated_folder/generated1.txt" "$solvable_folder/size16.txt" "-a $solvable_folder/severalsolutions.txt" "$cant_parse_folder/size5.txt" "$inconsistent_folder/identical_lines.txt" "$unsolvable_folder/nosolution.txt" "$generated_folder/generated1" "-h" "-a -u" "anything --nothing"
+for argument in "-g 4" "-g 32" "-g 8 -o $generated_folder/generated1.txt" "$solvable_folder/size8.txt" "-a $solvable_folder/severalsolutions.txt" "$cant_parse_folder/size5.txt" "$inconsistent_folder/identical_lines.txt" "$unsolvable_folder/nosolution.txt" "$generated_folder/generated1" "-h" "-a -u" "anything --nothing"
 do
 	$VALGRIND_CMD ./$executable $argument > /dev/null 2>&1
 	if [ $? -ne 7 ]; then
@@ -141,3 +155,10 @@ echo "Valgrind tested arguments for $executable ; $success out of $count_valgrin
 
 echo ""
 echo "$test_success / $test_count tests passed correctly"
+
+for i in {4,8,16}
+do
+	if [ -f $solvable_folder/generated$i ]; then
+		rm $solvable_folder/generated$i
+	fi
+done

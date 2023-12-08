@@ -20,12 +20,9 @@ struct Params parameters = {
 };
 
 int main(int argc, char *argv[]) {
-
-    //initialise to defaults values
     int rand = time(NULL);
     srand(rand);
     printf("%d\n", rand);
-    srand(1701910232);
 
 
     static struct option long_options[] =
