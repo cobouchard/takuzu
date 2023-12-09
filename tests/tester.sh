@@ -162,3 +162,7 @@ do
 		rm $solvable_folder/generated$i
 	fi
 done
+
+if [ -f $generated_folder/generated1.txt ]; then
+	rm $generated_folder/generated1.txt
+fi
