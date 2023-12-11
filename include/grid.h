@@ -62,11 +62,13 @@ void generate_grid(int size, t_grid *g);
 
 void generate_rand_grid(int size, t_grid *g);
 
-bool solve(t_grid *g);
+bool apply_heuristics(t_grid *g);
 
 void grid_choice_apply(t_grid *g, const t_choice choice);
 
 void grid_choice_print(const t_choice choice, FILE *fd);
+
+void find_first_empty(int *i, int *j, t_grid *g);
 
 t_choice grid_choice(t_grid *g);
 

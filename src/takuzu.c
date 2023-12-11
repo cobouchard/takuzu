@@ -126,11 +126,11 @@ int main(int argc, char *argv[]) {
         }
 
         if (!is_consistent(grid)) {
-            //if the grid is not consistent, we wont try to solve it and exit with an error
+            //if the grid is not consistent, we wont try to apply_heuristics it and exit with an error
             errx(EXIT_FAILURE, "The grid given in input is not consistent.\n");
         }
 
-        if (!solve(grid)) {
+        if (!apply_heuristics(grid)) {
             //the grid is not consistent after only application of heuristics, it's an impossible grid
             grid_print(grid, stdout);
             errx(EXIT_FAILURE, "grid cannot be solved, not consistent after heuristics");

@@ -307,6 +307,7 @@ void generate_rand_grid(int size, t_grid *g) {
         }
         char rand_char = rand() % 2 == 1 ? '0' : '1';
         g->grid[i][j] = rand_char;
+
         if (!is_consistent(g)) {
             g->grid[i][j] = other_char(rand_char);
         }
@@ -314,14 +315,14 @@ void generate_rand_grid(int size, t_grid *g) {
         if (!is_consistent(g)) {
             //if we can't set a 0 or a 1 to this empty space, the grid will never have a solution, we start again from the start
             grid_free(g);
-            generate_grid(size, g);
+            generate_rand_grid(size, g);
         }
         set_number--;
         tries--;
     }
 }
 
-bool solve(t_grid *g) {
+bool apply_heuristics(t_grid *g) {
     bool consistent = true;
     while (heuristics(g) && consistent) {
         consistent = is_consistent(g);
@@ -339,20 +340,28 @@ void grid_choice_print(const t_choice choice, FILE *fd) {
 }
 
 t_choice grid_choice(t_grid *g) {
+    //go to the first empty cell starting from top left
     t_choice choice;
 
-    int i = rand() % g->size, j = rand() % g->size;
+    int i=0, j = 0;
+    find_first_empty(&i,&j,g);
     char rand_char = rand() % 2 == 1 ? '0' : '1';
-
-    while (g->grid[i][j] != '_') {
-        i = rand() % g->size;
-        j = rand() % g->size;
-    }
 
     choice.row = i;
     choice.column = j;
     choice.choice = rand_char;
     return choice;
+}
+
+void find_first_empty(int *i, int *j, t_grid *g){
+    for(*i=0;*i < g->size;(*i)++){
+        for(*j=0;*j < g->size;(*j)++){
+
+            if(g->grid[*i][*j]=='_'){
+                return;
+            }
+        }
+    }
 }
 
 void print_solution(t_grid *g, bool final) {
@@ -392,9 +401,9 @@ t_grid *grid_solver_first(t_grid *g) {
     t_grid *copy = (t_grid *) malloc(sizeof(t_grid));
     grid_allocate(copy, g->size);
     grid_copy(g, copy);
-
     grid_choice_apply(copy, choice);
-    bool consistent = solve(copy);
+
+    bool consistent = apply_heuristics(copy);
     bool full = is_full(copy);
 
     //the grid is full and consistent :
@@ -468,10 +477,10 @@ void *grid_solver_all(t_grid *g) {
     grid_choice_apply(copy1, choice1);
     grid_choice_apply(copy2, choice2);
 
-    bool consistent1 = solve(copy1);
+    bool consistent1 = apply_heuristics(copy1);
     bool full1 = is_full(copy1);
 
-    bool consistent2 = solve(copy2);
+    bool consistent2 = apply_heuristics(copy2);
     bool full2 = is_full(copy2);
 
 
