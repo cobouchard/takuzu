@@ -11,7 +11,8 @@
 #define different(a, b) ( (uint64_t )(a | b) != (uint64_t )mask_nbits(g->size))
 
 
-#define percentage 25
+#define percentage 20
+#define MAX_SOLVABLE_SIZE 16
 
 typedef struct {
     int size;
@@ -58,7 +59,7 @@ bool fill_column(int column, t_grid *g, char c, int count);
 
 bool fill_line(int line, t_grid *g, char c, int count);
 
-void generate_grid(int size, t_grid *g);
+void generate_solvable_grid(int size, t_grid *g);
 
 void generate_rand_grid(int size, t_grid *g);
 

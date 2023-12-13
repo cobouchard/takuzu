@@ -22,8 +22,6 @@ struct Params parameters = {
 int main(int argc, char *argv[]) {
     int rand = time(NULL);
     srand(rand);
-    printf("%d\n", rand);
-
 
     static struct option long_options[] =
             {
@@ -170,7 +168,7 @@ int main(int argc, char *argv[]) {
         errx(EXIT_FAILURE, "too many arguments for generator mode, no file needed");
     } else { //generator mode
         t_grid *generated = (t_grid *) malloc(sizeof(t_grid));
-        generate_grid(parameters.N, generated);
+        generate_solvable_grid(parameters.N, generated);
         if (!is_consistent(generated)) {
             grid_free(generated);
             free(generated);
@@ -197,7 +195,9 @@ int main(int argc, char *argv[]) {
 }
 
 void print_help() {
-    printf("Usage: \ttakuzu[-a|-o FILE|-v|-h] FILE... \n\ttakuzu -g[SIZE] [-u|-o FILE|-v|-h] \nSolve or generate takuzu grids of size: 4, 8, 16, 32, 64\n \
+    printf("Usage: \ttakuzu[-a|-o FILE|-v|-h] FILE... \n\t \
+    takuzu -g[SIZE] [-u|-o FILE|-v|-h] \n\
+    Solve or generate takuzu grids of size: 4, 8, 16, 32, 64\n \
     -a, --all \t \t \t \tsearch for all possible solutions\n \
     -g[N], --generate[N] \t \tgenerate a grid of size NxN (default:8)\n \
     -o FILE, --output FILE \t \twrite output to FILE\n \

@@ -269,13 +269,13 @@ bool fill_line(int line, t_grid *g, char c, int count) {
     return change;
 }
 
-void generate_grid(int size, t_grid *g) {
+void generate_solvable_grid(int size, t_grid *g) {
     if (g == NULL) {
         errx(EXIT_FAILURE, "trying to generate a grid on an empty pointer\n");
     }
     generate_rand_grid(size, g);
 
-    if (size <= 16) {
+    if (size <= MAX_SOLVABLE_SIZE) {
         //we try solving the grid, if there are no solutions, we generate an other grid
         t_grid *copy = (t_grid *) malloc(sizeof(t_grid));
         grid_allocate(copy, size);
@@ -287,7 +287,7 @@ void generate_grid(int size, t_grid *g) {
         free(copy);
         if (!valid) {
             grid_free(g);
-            generate_grid(size, g);
+            generate_solvable_grid(size, g);
         }
     }
 
@@ -422,8 +422,16 @@ t_grid *grid_solver_first(t_grid *g) {
         choice.choice = other_char(choice.choice);
         grid_copy(g, copy); //we remove changes that were made
         grid_choice_apply(copy, choice); //and apply the new choice
+        consistent = apply_heuristics(copy);
+
         grid_free(g);
         free(g);
+        //if the grid is inconsistent the grid cannot be solved
+        //if the grid is consistent and full we return it, otherwise we keep solving
+        if(!consistent || is_full(copy)){
+            return copy;
+        }
+
         return grid_solver_first(copy);
     }
 

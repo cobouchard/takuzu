@@ -15,7 +15,7 @@ if [ ! -f $executable ]; then
 fi
 
 
-echo "Testing takuzu project, this might takes some time (~30s)." 
+echo "Testing takuzu project, this might takes some time (~20s)." 
 echo "You can stop it and restart if it's taking too long"
 echo ""
 
