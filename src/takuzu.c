@@ -207,11 +207,6 @@ void print_help() {
 
 }
 
-/**
- *
- * @param arg string entered to the terminal, should come directly from argv
- * @return return -1 if the number is not in the list (4,8,16,32,64)
- */
 int checkArgGenerator(char *arg) {
     char *end;
     long temp_N = strtol(arg, &end, 10);

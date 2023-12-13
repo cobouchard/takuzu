@@ -2,11 +2,7 @@
 #include "../include/grid.h"
 #include "../include/heuristics.h"
 
-/**
- * when 2 consecutive characters are found (1 or 0) the next character is set to the opposite (if it was not filled)
- * @param g
- * @return return true if the grid has been changed, false otherwise
- */
+
 bool heur_consecutive(t_grid *g) {
     bool change = false;
     char current_char = '_';

@@ -48,11 +48,6 @@ void grid_free(t_grid *g) {
 }
 
 
-/**
- * print the current grid in an output file, because this function is given a FILE*, it's not its role to close and free it
- * @param g
- * @param fd
- */
 void grid_print(const t_grid *g, FILE *fd) {
     if (g == NULL) {
         warnx("grid given to print in file is NULL");
@@ -100,12 +95,7 @@ char get_cell(int i, int j, t_grid *g) {
     return g->grid[i][j];
 }
 
-/**
- *
- * @param g
- * @param line
- * @return generate a 64-bits long integer, two identical lines generate the same number, return 0 if there is an '_' meaning that this line will be different than any other line
- */
+
 int64_t lineToInt(t_grid *g, int line, char c) {
     int64_t code = INT64_C(0);
 
@@ -120,7 +110,6 @@ int64_t lineToInt(t_grid *g, int line, char c) {
     return code;
 }
 
-//same function but for columns
 int64_t columnToInt(t_grid *g, int column, char c) {
     int64_t code = INT64_C(0);
 
@@ -135,13 +124,6 @@ int64_t columnToInt(t_grid *g, int column, char c) {
     return code;
 }
 
-
-
-/**
- *
- * @param g
- * @return true if there are no consecutive 0 or 1 AND if no two lines or two columns are equals
- */
 bool is_consistent(t_grid *g) {
     int64_t linesCodeOnes[g->size];
     int64_t columnsCodeOnes[g->size];
@@ -343,8 +325,8 @@ t_choice grid_choice(t_grid *g) {
     //go to the first empty cell starting from top left
     t_choice choice;
 
-    int i=0, j = 0;
-    find_first_empty(&i,&j,g);
+    int i = 0, j = 0;
+    find_first_empty(&i, &j, g);
     char rand_char = rand() % 2 == 1 ? '0' : '1';
 
     choice.row = i;
@@ -353,11 +335,11 @@ t_choice grid_choice(t_grid *g) {
     return choice;
 }
 
-void find_first_empty(int *i, int *j, t_grid *g){
-    for(*i=0;*i < g->size;(*i)++){
-        for(*j=0;*j < g->size;(*j)++){
+void find_first_empty(int *i, int *j, t_grid *g) {
+    for (*i = 0; *i < g->size; (*i)++) {
+        for (*j = 0; *j < g->size; (*j)++) {
 
-            if(g->grid[*i][*j]=='_'){
+            if (g->grid[*i][*j] == '_') {
                 return;
             }
         }
@@ -428,7 +410,7 @@ t_grid *grid_solver_first(t_grid *g) {
         free(g);
         //if the grid is inconsistent the grid cannot be solved
         //if the grid is consistent and full we return it, otherwise we keep solving
-        if(!consistent || is_full(copy)){
+        if (!consistent || is_full(copy)) {
             return copy;
         }
 
@@ -501,8 +483,7 @@ void *grid_solver_all(t_grid *g) {
         } else {
             grid_solver_all(copy1);
         }
-    }
-    else{
+    } else {
         grid_free(copy1);
         free(copy1);
     }
@@ -516,8 +497,7 @@ void *grid_solver_all(t_grid *g) {
         } else {
             grid_solver_all(copy2);
         }
-    }
-    else{
+    } else {
         grid_free(copy2);
         free(copy2);
     }

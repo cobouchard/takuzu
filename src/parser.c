@@ -23,7 +23,6 @@ void file_parser(t_grid *grid, FILE *file, int *parameters_size) {
     char *first_line = (char *) calloc(MAX_BUFFER, sizeof(char));
 
     //let's read the first line, find the size of the grid and allocate the grid to store the data parsed
-
     do {
         if (fgets(buffer, MAX_BUFFER, file) != NULL) {
             readLine(buffer, MAX_GRID_SIZE, current_line, first_line, &temp_size);
@@ -51,6 +50,7 @@ void file_parser(t_grid *grid, FILE *file, int *parameters_size) {
     }
     current_line++;
     free(first_line);
+
 
     //we will now check that the next lines are the same size as the first one and finish the parsing of the file
     char *line = (char *) calloc(grid->size, sizeof(char));
@@ -98,12 +98,6 @@ void file_parser(t_grid *grid, FILE *file, int *parameters_size) {
 }
 
 
-/**
- *
- * @param line
- * @param size size of the grid if known, if not known (first time going in this function, should be size 64 and the size will be determined thanks to the first line
- * @return the corresponding line of the grid (only significant characters)
- */
 void readLine(char *line, int size, int current_line, char *line_to_return, int *count_char) {
     char current_char = '\0';
     int current_index = 0;
