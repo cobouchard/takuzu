@@ -1,119 +1,117 @@
 \documentclass{article}
 
-% Language setting
-% Replace `english' with e.g. `spanish' to change the document language
 \usepackage[english]{babel}
 
-% Set page size and margins
-% Replace `letterpaper' with `a4paper' for UK/EU standard size
 \usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
 
-% Useful packages
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 
-\title{Your Paper}
-\author{You}
+\title{Takuzu - Report}
+\author{BOUCHARD Corentin}
 
 \begin{document}
 \maketitle
 
-\begin{abstract}
-Your abstract.
-\end{abstract}
 
 \section{Introduction}
+This is the report explaining my work on the Takuzu project. I've worked alone for all of the project except for some useful dicussions with Briac Bruneau and Tony Law. This report will mainly go through : heuristics and grid generation. The generation of grid with a unique solution have not been implemented. 
 
-Your introduction goes here! Simply start writing your document and use the Recompile button to view the updated PDF preview. Examples of commonly used commands and features are listed below, to help you get started.
-
-Once you're familiar with the editor, you can find various project settings in the Overleaf menu, accessed via the button in the very top left of the editor. To view tutorials, user guides, and further documentation, please visit our \href{https://www.overleaf.com/learn}{help library}, or head to our plans page to \href{https://www.overleaf.com/user/subscription/plans}{choose your plan}.
-
-\section{Some examples to get started}
-
-\subsection{How to create Sections and Subsections}
-
-Simply use the section and subsection commands, as in this example document! With Overleaf, all the formatting and numbering is handled automatically according to the template you've chosen. If you're using the Visual Editor, you can also create new section and subsections via the buttons in the editor toolbar.
-
-\subsection{How to include Figures}
-
-First you have to upload the image file from your computer using the upload link in the file-tree menu. Then use the includegraphics command to include it in your document. Use the figure environment and the caption command to add a number and a caption to your figure. See the code for Figure \ref{fig:frog} in this section for an example.
-
-Note that your figure will automatically be placed in the most appropriate place for it, given the surrounding text and taking into account other figures or tables that may be close by. You can find out more about adding images to your documents in this help article on \href{https://www.overleaf.com/learn/how-to/Including_images_on_Overleaf}{including images on Overleaf}.
-
-\begin{figure}
-\centering
-\includegraphics[width=0.25\linewidth]{frog.jpg}
-\caption{\label{fig:frog}This frog was uploaded via the file-tree menu.}
-\end{figure}
-
-\subsection{How to add Tables}
-
-Use the table and tabular environments for basic tables --- see Table~\ref{tab:widgets}, for example. For more information, please see this help article on \href{https://www.overleaf.com/learn/latex/tables}{tables}. 
-
-\begin{table}
-\centering
-\begin{tabular}{l|r}
-Item & Quantity \\\hline
-Widgets & 42 \\
-Gadgets & 13
-\end{tabular}
-\caption{\label{tab:widgets}An example table.}
-\end{table}
-
-\subsection{How to add Comments and Track Changes}
-
-Comments can be added to your project by highlighting some text and clicking ``Add comment'' in the top right of the editor pane. To view existing comments, click on the Review menu in the toolbar above. To reply to a comment, click on the Reply button in the lower right corner of the comment. You can close the Review pane by clicking its name on the toolbar when you're done reviewing for the time being.
-
-Track changes are available on all our \href{https://www.overleaf.com/user/subscription/plans}{premium plans}, and can be toggled on or off using the option at the top of the Review pane. Track changes allow you to keep track of every change made to the document, along with the person making the change. 
-
-\subsection{How to add Lists}
-
-You can make lists with automatic numbering \dots
-
-\begin{enumerate}
-\item Like this,
-\item and like this.
-\end{enumerate}
-\dots or bullet points \dots
-\begin{itemize}
-\item Like this,
-\item and like this.
-\end{itemize}
-
-\subsection{How to write Mathematics}
-
-\LaTeX{} is great at typesetting mathematics. Let $X_1, X_2, \ldots, X_n$ be a sequence of independent and identically distributed random variables with $\text{E}[X_i] = \mu$ and $\text{Var}[X_i] = \sigma^2 < \infty$, and let
-\[S_n = \frac{X_1 + X_2 + \cdots + X_n}{n}
-      = \frac{1}{n}\sum_{i}^{n} X_i\]
-denote their mean. Then as $n$ approaches infinity, the random variables $\sqrt{n}(S_n - \mu)$ converge in distribution to a normal $\mathcal{N}(0, \sigma^2)$.
+\section{Heuristics implemented}
+Only very basics heuristics have been implemented. Many more could be implemented but we would have to check if they improve the solver. After looking at which heuristics are used we will explain how my backtracking works. 
+\subsection{heur\_consecutive}
+Using the rule that a well-formed takuzu cannot have 3 consecutive same characters, this heuristics go through all the grid to find 2-consecutive characters. Whenever found, it tries to update empty cells on the top and bottom (or left and right for lines) to the other character.
 
 
-\subsection{How to change the margins and paper size}
+\begin{align*}
+    & \begin{bmatrix}
+        \_ & 1 & 1 & \_ \\
+        \_ & 1 & \_ & \_ \\
+        \_ & \_ & \_ & \_ \\
+        \_ & \_ & \_ & \_ 
+    \end{bmatrix}
+    && \begin{bmatrix}
+        0 & 1 & 1 & 0 \\
+        \_ & 1 & \_ & \_ \\
+        \_ & \_ & \_ & \_ \\
+        \_ & \_ & \_ & \_ 
+    \end{bmatrix}
+    && \begin{bmatrix}
+        0 & 1 & 1 & 0 \\
+        \_ & 1 & \_ & \_ \\
+        \_ & 0 & \_ & \_ \\
+        \_ & \_ & \_ & \_ 
+    \end{bmatrix}
+\end{align*}
 
-Usually the template you're using will have the page margins and paper size set correctly for that use-case. For example, if you're using a journal article template provided by the journal publisher, that template will be formatted according to their requirements. In these cases, it's best not to alter the margins directly.
 
-If however you're using a more general template, such as this one, and would like to alter the margins, a common way to do so is via the geometry package. You can find the geometry package loaded in the preamble at the top of this example file, and if you'd like to learn more about how to adjust the settings, please visit this help article on \href{https://www.overleaf.com/learn/latex/page_size_and_margins}{page size and margins}.
+\subsection{heur\_fill}
+Takuzu grids must have exactly half 0 and 1 on each line/column. Whenever a line/column already has half its size filled with one characted, the rest can be filled with the other character.
 
-\subsection{How to change the document language and spell check settings}
+\begin{align*}
+    & \begin{bmatrix}
+        1 & 1 & \_ & \_ \\
+        \_ & \_ & \_ & 0 \\
+        \_ & \_ & \_ & \_ \\
+        \_ & \_ & \_ & \_ 
+    \end{bmatrix}
+    && \begin{bmatrix}
+        1 & 1 & 0 & 0 \\
+        \_ & \_ & \_ & 0 \\
+        \_ & \_ & \_ & \_ \\
+        \_ & \_ & \_ & \_ 
+    \end{bmatrix}
+    && \begin{bmatrix}
+        1 & 1 & 0 & 0 \\
+        \_ & \_ & \_ & 0 \\
+        \_ & \_ & \_ & 1 \\
+        \_ & \_ & \_ & 1 
+    \end{bmatrix}
+\end{align*}
 
-Overleaf supports many different languages, including multiple different languages within one document. 
+\subsection{heur\_between}
+Whenever we have a 1 (resp 0) a blank then an other 1 (resp 0), we know that the blank in the middle must be a 0 (resp 1). Otherwise we would have three consecutive characters resulting in an inconsistent grid.
+\begin{align*}
+    & \begin{bmatrix}
+        1 & \_ & 1 & \_ \\
+        \_ & \_ & \_ & \_ \\
+        \_ & 0 & \_ & \_ \\
+        \_ & \_ & \_ & \_ 
+    \end{bmatrix}
+    && \begin{bmatrix}
+        1 & 0 & 1 & \_ \\
+        \_ & \_ & \_ & \_ \\
+        \_ & 0 & \_ & \_ \\
+        \_ & \_ & \_ & \_ 
+    \end{bmatrix}
+    && \begin{bmatrix}
+        1 & 0 & 1 & \_ \\
+        \_ & 1 & \_ & \_ \\
+        \_ & 0 & \_ & \_ \\
+        \_ & \_ & \_ & \_ 
+    \end{bmatrix}
+\end{align*}
+\subsection{Backtracking}
+I have cut backtracking in two functions, one finding only one solution (the "first" one), one finding every solutions. Both methods requires that we first apply heuristics before entering backtracking functions. The choice function is the same for both, it finds the first empty cell, starting from top left. This is probably a bit better than choosing random, because after many calls, choosing from the same area will result in heuristics filling more cells. If more cells are filled, we know quicker if the current grid is going to be valid or not. The current backtracking takes too much time to solve grids of size 32 or 64.
+\subsubsection{Finding first solution}
+Entering the function, we have a non-full, non-improvable via heuristics, consistent grid. We make an arbitrary choice in the grid and reapply heuristics. If the grid is valid (consistent and full), we have found a solution and returns it. If the grid is not consistent, we change the choice made (change the character) and reapply heuristics. We return either the grid or we keep exploring depending on the validity. We then explore further the grid, and at the end of the recursive stack, we check for consistency, and change the choice made if we ended up on an inconsistent grid.
+\subsubsection{Finding all solutions}
+Everytime the function is called, we create a two copies of the grid. We make an arbitrary choice for copy1, and we change the character for copy2. We apply heuristics on both copy and we print the solution, continue exploring, or stop, depending of the validity of the grids.    
+\section{Grid generation}
+The grid are generated randomly, we make sure they are solvable (for size < 32) by solving them using the backtracking. The generation for grids of size 32 or 64 often leads to a consistent grid, but inconsistent after applying heuristics using this method.
+\subsection{generate\_rand\_grid}
+We start with an empty grid of a given size. We have to fill N\% cells of the grid, we generate a random position on an empty cell and fill it with a random character (0 or 1). We check if the grid is not consistent we try the other character, and if it's still not consistent, we start over from an empty grid. We repeat the operation until the grid is filled with N\% characters.
+\subsection{generate\_solvable\_grid}
+We use the last function to generate a random grid. If the size of the grid is less than 32, we solve it using the backtracking. If the grid is solvable, we can return the grid, otherwise we repeat the operation until we get a solvable grid.
+\section{Final improvements}
+This section will explain some of what happens since assignment-5.
+\subsection{Tester}
+I've greatly improved my tester script done for assignment-4. Added many grids, to different folders depending on if they are inconsistent, if they cannot be parsed, if they are solvable or not. The tester now checks if it is executed from the right folder and if make have been called before. Also added testing of valgrind on different arguments. All these tests made me found small bugs and memory leaks and they were also very useful to check if everything was still working after making small improvements.
+\subsection{Cleaning, improvements}
+Some documentation have been added, and some have been moved to header files. Most improvements come from memory leaks, every memory leak found with valgrind have been fixed. A target have been added to make the pdf of the report.
 
-To configure the document language, simply edit the option provided to the babel package in the preamble at the top of this example project. To learn more about the different options, please visit this help article on \href{https://www.overleaf.com/learn/latex/International_language_support}{international language support}.
 
-To change the spell check language, simply open the Overleaf menu at the top left of the editor window, scroll down to the spell check setting, and adjust accordingly.
 
-\subsection{How to add Citations and a References List}
-
-You can simply upload a \verb|.bib| file containing your BibTeX entries, created with a tool such as JabRef. You can then cite entries from it, like this: \cite{greenwade93}. Just remember to specify a bibliography style, as well as the filename of the \verb|.bib|. You can find a \href{https://www.overleaf.com/help/97-how-to-include-a-bibliography-using-bibtex}{video tutorial here} to learn more about BibTeX.
-
-If you have an \href{https://www.overleaf.com/user/subscription/plans}{upgraded account}, you can also import your Mendeley or Zotero library directly as a \verb|.bib| file, via the upload menu in the file-tree.
-
-\subsection{Good luck!}
-
-We hope you find Overleaf useful, and do take a look at our \href{https://www.overleaf.com/learn}{help library} for more tutorials and user guides! Please also let us know if you have any feedback using the Contact Us link at the bottom of the Overleaf menu --- or use the contact form at \url{https://www.overleaf.com/contact}.
-
-\bibliographystyle{alpha}
-\bibliography{sample}
 
 \end{document}

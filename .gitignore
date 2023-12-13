@@ -3,3 +3,6 @@
 .idea
 takuzu
 src/takuzu
+report.aux
+report.log
+report.out
